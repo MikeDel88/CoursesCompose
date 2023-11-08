@@ -18,6 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -27,18 +31,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-fun getListe(): List<Course> {
-    val list = mutableListOf<Course>()
-    for(i: Int in 0..50) {
-        list.add(Course(i, "Nom$i"))
-    }
-    return list
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Search(modifier: Modifier) {
+fun Search(text: String, onValueChange: (newValue: String) -> Unit, modifier: Modifier) {
     TextField(
         leadingIcon = {
             Icon(
@@ -46,9 +42,11 @@ fun Search(modifier: Modifier) {
                 contentDescription = null
             )
         },
-        value = "",
-        onValueChange = {},
-        modifier = Modifier.fillMaxWidth(1f)
+        value = text,
+        onValueChange = { onValueChange(it) },
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(top = 16.dp)
     )
 }
 
@@ -56,6 +54,9 @@ fun Search(modifier: Modifier) {
 @Preview
 @Composable
 fun Search() {
+
+    var text by rememberSaveable { mutableStateOf("") }
+
     TextField(
         leadingIcon = {
             Icon(
@@ -63,9 +64,11 @@ fun Search() {
                 contentDescription = null
             )
         },
-        value = "",
-        onValueChange = {},
-        modifier = Modifier.fillMaxWidth(1f)
+        value = text,
+        onValueChange = { text = it },
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(top = 16.dp)
     )
 }
 
@@ -146,8 +149,7 @@ fun CourseItem() {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
-                modifier = Modifier
-                    .size(40.dp),
+                modifier = Modifier.size(40.dp),
             )
             Text(
                 text = "Bonjour",

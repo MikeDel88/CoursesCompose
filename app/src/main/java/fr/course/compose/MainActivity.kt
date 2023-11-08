@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,8 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyApp(modifier = Modifier
-                        .padding(8.dp))
+                    MyApp(modifier = Modifier.padding(8.dp))
                 }
             }
         }
@@ -34,13 +38,22 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(modifier: Modifier) {
-    val list = getListe()
+
+    var list by rememberSaveable { mutableStateOf(getListe()) }
+    var text by rememberSaveable { mutableStateOf("") }
+
     Column(modifier = Modifier.padding(horizontal = 8.dp))  {
-        if(list.size > 1)
-        {
-            Search(modifier)
-        }
-        CourseList(list = getListe(), modifier = modifier)
+
+        Search(
+            text,
+            {
+                text = it
+                list = getListe()
+                list = list.filter { course -> course.name.contains(text) }
+            },
+            modifier
+        )
+        CourseList(list = list, modifier = modifier)
     }
 
 }
@@ -48,12 +61,8 @@ fun MyApp(modifier: Modifier) {
 @Preview(showSystemUi = true)
 @Composable
 fun MyApp() {
-    val list = getListe()
     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-        if(list.size > 1)
-        {
-            Search()
-        }
+        Search()
         CourseList()
     }
 }
