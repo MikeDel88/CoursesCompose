@@ -110,7 +110,7 @@ fun ScreenCourse() {
         else
         {
             Spacer(modifier = Modifier.size(16.dp))
-            Search("Intermarche", {})
+            Search("Intermarche") {}
             CourseList(getListForTest(), {}, {})
         }
 
@@ -176,7 +176,7 @@ fun CourseList(
     }
 }
 
-@Preview()
+@Preview
 @Composable
 fun CourseList() {
     LazyColumn(
@@ -277,7 +277,7 @@ fun CourseItem() {
             },
             dismissContent = {
                 CourseItemCard(currentItem) {
-                    Toast.makeText(context, "Click on $currentItem", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Click on $currentItem", Toast.LENGTH_SHORT).show()
                 }
             }
         )

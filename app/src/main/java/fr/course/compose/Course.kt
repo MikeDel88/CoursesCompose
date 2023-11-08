@@ -1,20 +1,19 @@
 package fr.course.compose
 
 import android.content.Context
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlinx.serialization.json.*
+import java.util.Locale
 
 @Serializable
 data class Course(val id: Int, var name: String, var date: String, val icon: Int)
 
 fun Date.formatCourse(): String {
     return try {
-        //TODO: voir pour formattage correcte selon pays.
-        val formatter = SimpleDateFormat("EEEE dd MMMM Y")
+        val formatter = SimpleDateFormat("EEEE dd MMMM yyyy", Locale.getDefault())
         formatter.format(this)
     } catch (exception: Exception) {
         "Erreur date"

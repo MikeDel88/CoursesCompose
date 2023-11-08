@@ -2,7 +2,6 @@ package fr.course.compose
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.Date
 
 class CourseRepository {
     init {
