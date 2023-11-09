@@ -1,5 +1,6 @@
 package fr.course.compose
 
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
@@ -7,10 +8,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
@@ -26,9 +32,12 @@ import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import fr.course.compose.CourseLocaleDataSource.Companion.getListForTest
 import kotlinx.coroutines.delay
 import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -58,18 +69,26 @@ fun CourseList(
     state: UiCourseState,
     onClickItem: (item: Courses) -> Unit,
     onRemove: (item: Courses) -> Unit,
+    modifier: Modifier
 ) {
     if(state.loading)
     {
-        CircularProgressIndicator(
-            modifier = Modifier.width(64.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            trackColor = MaterialTheme.colorScheme.secondary,
-        )
+        Box(contentAlignment = Alignment.Center, modifier = modifier) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                trackColor = MaterialTheme.colorScheme.secondary,
+            )
+
+        }
+
     } else {
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = modifier
         ) {
             items(
                 items = state.data,
@@ -223,7 +242,7 @@ fun CourseItemCard(courseModel: Courses, onClickItem: (item: Courses) -> Unit) {
                     .clip(CircleShape)
             )
             Text(
-                text = courseModel.name,
+                text = courseModel.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                 textAlign = TextAlign.Center,
                 maxLines = 2,
                 modifier = Modifier
@@ -272,6 +291,79 @@ fun CourseItemCard() {
                 fontStyle = FontStyle.Italic,
                 fontSize = MaterialTheme.typography.labelSmall.fontSize
             )
+        }
+    }
+}
+
+@Composable
+fun FormCourse(value: String, onClickValidate: (courses: Courses) -> Unit) {
+
+    var text by rememberSaveable { mutableStateOf(value) }
+    var openDatePicker by rememberSaveable { mutableStateOf(false) }
+    var dateSelected by rememberSaveable { mutableStateOf(Date().formatCourse()) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.weight(1f)
+            )
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
+                SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
+                        date -> dateSelected = if(date != null) Date(date).formatCourse() else Date().formatCourse()
+                }
+
+            IconButton(
+                onClick = { openDatePicker = true },
+                colors =  IconButtonDefaults.filledIconButtonColors()
+            ) {
+                Icon(Icons.Default.DateRange, contentDescription = null)
+            }
+        }
+        Button(
+            onClick =
+            {
+                onClickValidate(Courses(name = text, date = dateSelected))
+                text = ""; dateSelected = Date().formatCourse()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text="VALIDER", maxLines = 1)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun FormCourse() {
+    var text by rememberSaveable { mutableStateOf("Intemarché") }
+    var openDatePicker by rememberSaveable { mutableStateOf(true) }
+    var dateSelected by rememberSaveable { mutableStateOf(Date().formatCourse()) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.weight(1f)
+            )
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
+                SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
+                    date -> dateSelected = if(date != null) Date(date).formatCourse() else ""
+                }
+
+            IconButton(
+                onClick = { openDatePicker = true },
+                colors =  IconButtonDefaults.filledIconButtonColors()
+            ) {
+                Icon(Icons.Default.DateRange, contentDescription = null)
+            }
+        }
+        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+            Text(text="VALIDER", maxLines = 1)
         }
     }
 }

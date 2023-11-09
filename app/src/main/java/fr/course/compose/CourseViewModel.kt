@@ -41,4 +41,12 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
         }
     }
 
+    fun addCourse(courses: Courses) {
+        viewModelScope.launch {
+            courseRepository.addCourse(courses).collect { list ->
+                _uiState.value = UiCourseState(data = list)
+            }
+        }
+    }
+
 }

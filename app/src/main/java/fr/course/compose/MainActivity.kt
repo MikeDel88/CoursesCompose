@@ -6,12 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -48,6 +46,7 @@ class MainActivity : ComponentActivity() {
                         findList = { name -> courseViewModel.findCourse(name) },
                         onClickItem = { item -> Toast.makeText(this, "Click sur item ${item.name}", Toast.LENGTH_SHORT).show() },
                         onRemoveItem =  { course -> courseViewModel.removeCourse(course) },
+                        onAddItem = { course -> courseViewModel.addCourse(course) }
                     )
                 }
             }
@@ -60,14 +59,13 @@ fun ScreenCourse(
     uiCourseState: UiCourseState,
     findList: (text: String) -> Unit,
     onClickItem: (item: Courses) -> Unit,
-    onRemoveItem : (courseModel: Courses) -> Unit,
+    onRemoveItem : (course: Courses) -> Unit,
+    onAddItem : (course: Courses) -> Unit
 )
 {
     var text by rememberSaveable { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(horizontal = 8.dp))  {
-
-        Spacer(modifier = Modifier.size(16.dp))
+    Column(modifier = Modifier.padding(8.dp).fillMaxHeight())  {
         Search(
             text = text,
             onValueChange = { text = it; findList(it) }
@@ -76,31 +74,19 @@ fun ScreenCourse(
             state = uiCourseState,
             onClickItem = onClickItem,
             onRemove = onRemoveItem,
+            modifier = Modifier.weight(1f).fillMaxWidth()
         )
-
+        FormCourse("", onAddItem)
     }
 }
 
-@Preview
+@Preview(heightDp = 900)
 @Composable
 fun ScreenCourse() {
-    val isLoading = false
-    Column(modifier = Modifier.padding(horizontal = 8.dp))  {
-        if(isLoading)
-        {
-            CircularProgressIndicator(
-                modifier = Modifier.width(64.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                trackColor = MaterialTheme.colorScheme.secondary,
-            )
-        }
-        else
-        {
-            Spacer(modifier = Modifier.size(16.dp))
-            Search("Intermarche") {}
-            CourseList(UiCourseState(data = getListForTest()), {}, {})
-        }
-
+    Column(modifier = Modifier.padding(8.dp).fillMaxHeight())  {
+        Search("Intermarche") {}
+        CourseList(UiCourseState(data = getListForTest()), {}, {}, Modifier.weight(1f).fillMaxWidth())
+        FormCourse("Intermarche") {}
     }
 }
 

@@ -33,7 +33,7 @@ fun getDrawable(name: String): Int {
     return when(name.lowercase().trim()) {
         "intermarche" -> R.drawable.icon_intermarche
         "carrefour" -> R.drawable.icon_carrefour
-        "superu" -> R.drawable.icon_superu
+        "super u" -> R.drawable.icon_superu
         "leclerc" -> R.drawable.icon_leclerc
         else -> R.drawable.icon_inconnu
     }
