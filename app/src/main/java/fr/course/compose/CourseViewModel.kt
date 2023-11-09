@@ -18,35 +18,41 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
     val uiState: StateFlow<UiCourseState> = _uiState.asStateFlow()
 
     init {
+        getListe()
+    }
+
+    private fun getListe() {
         viewModelScope.launch {
-            courseRepository.getListeOfCourse().collect { list ->
-                _uiState.value = UiCourseState(data = list)
-            }
+            courseRepository.getListeOfCourse().collect(::collectList)
         }
     }
 
     fun findCourse(name: String) {
         viewModelScope.launch {
-            courseRepository.findCoursesByName(name).collect { list ->
-                _uiState.value = UiCourseState(data = list)
-            }
+            courseRepository.findCoursesByName(name).collect(::collectList)
         }
     }
 
     fun removeCourse(courseModel: Courses) {
         viewModelScope.launch {
-            courseRepository.suppCourse(courseModel).collect { list ->
-                _uiState.value = UiCourseState(data = list)
-            }
+            courseRepository.suppCourse(courseModel).collect(::collectList)
+        }
+    }
+
+    fun majCourse(courses: Courses) {
+        viewModelScope.launch {
+            courseRepository.updateCourse(courses).collect(::collectList)
         }
     }
 
     fun addCourse(courses: Courses) {
         viewModelScope.launch {
-            courseRepository.addCourse(courses).collect { list ->
-                _uiState.value = UiCourseState(data = list)
-            }
+            courseRepository.addCourse(courses).collect(::collectList)
         }
+    }
+
+    private fun collectList(list: List<Courses>) {
+        _uiState.value = UiCourseState(data = list)
     }
 
 }

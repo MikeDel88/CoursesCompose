@@ -7,4 +7,5 @@ interface CourseRepository {
     suspend fun suppCourse(courses: Courses): Flow<List<Courses>>
     suspend fun addCourse(courses: Courses): Flow<List<Courses>>
     suspend fun findCoursesByName(name: String): Flow<List<Courses>>
+    suspend fun updateCourse(courses: Courses): Flow<List<Courses>>
 }

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CourseDao {
 
-    @Query("SELECT * FROM courses ORDER BY courses.createdTime")
+    @Query("SELECT * FROM courses ORDER BY courses.date DESC")
     fun getAll(): Flow<List<Courses>>
 
     @Query("SELECT * FROM courses WHERE id = :coursesId")

@@ -339,7 +339,7 @@ fun FormCourse(value: String, onClickValidate: (courses: Courses) -> Unit) {
 @Composable
 fun FormCourse() {
     var text by rememberSaveable { mutableStateOf("Intemarché") }
-    var openDatePicker by rememberSaveable { mutableStateOf(true) }
+    var openDatePicker by rememberSaveable { mutableStateOf(false) }
     var dateSelected by rememberSaveable { mutableStateOf(Date().formatCourse()) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -350,8 +350,8 @@ fun FormCourse() {
                 modifier = Modifier.weight(1f)
             )
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
-                SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                SimpleDatePickerInDatePickerDialog(openDatePicker, { openDatePicker = false }) {
                     date -> dateSelected = if(date != null) Date(date).formatCourse() else ""
                 }
 

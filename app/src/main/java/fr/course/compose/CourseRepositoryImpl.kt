@@ -9,5 +9,6 @@ class CourseRepositoryImpl @Inject constructor(private val courseLocaleDataSourc
     override suspend fun suppCourse(courses: Courses): Flow<List<Courses>> = courseLocaleDataSource.deleteCourse(courses)
     override suspend fun addCourse(courses: Courses): Flow<List<Courses>> = courseLocaleDataSource.insertCourse(courses)
     override suspend fun findCoursesByName(name: String): Flow<List<Courses>> = courseLocaleDataSource.getListeByNames(name)
+    override suspend fun updateCourse(courses: Courses): Flow<List<Courses>> = courseLocaleDataSource.updateCourse(courses)
 
 }

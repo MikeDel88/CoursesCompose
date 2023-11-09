@@ -40,4 +40,9 @@ class CourseLocaleDataSource @Inject constructor(private val courseDao: CourseDa
         else
             courseDao.getCourseByName("%$name%")
     }
+
+    suspend fun updateCourse(courses: Courses) = withContext(Dispatchers.Default) {
+        courseDao.update(courses)
+        getListe()
+    }
 }
