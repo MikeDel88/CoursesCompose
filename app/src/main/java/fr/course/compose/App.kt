@@ -2,15 +2,8 @@ package fr.course.compose
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
+import dagger.hilt.android.HiltAndroidApp
 
-class App: Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-        appContext = applicationContext
-    }
-
-    companion object {
-        lateinit  var appContext: Context
-    }
-}
+@HiltAndroidApp
+class App: Application()

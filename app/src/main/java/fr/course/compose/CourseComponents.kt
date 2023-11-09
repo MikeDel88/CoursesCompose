@@ -7,10 +7,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
@@ -32,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,7 +36,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,127 +48,43 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fr.course.compose.CourseLocaleDataSource.Companion.getListForTest
 import kotlinx.coroutines.delay
 import java.util.Date
 
 
 @Composable
-fun ScreenCourse(
-    uiCourseState: UiCourseState,
-    findList: (text: String) -> Unit,
-    onClickItem: (item: Course) -> Unit,
-    onRemoveItem : (course: Course) -> Unit,
-)
-{
-    var text by rememberSaveable { mutableStateOf("") }
-
-    Column(modifier = Modifier.padding(horizontal = 8.dp))  {
-        if(uiCourseState.loading)
-        {
-            CircularProgressIndicator(
-                modifier = Modifier.width(64.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                trackColor = MaterialTheme.colorScheme.secondary,
-            )
-
-        }
-        else
-        {
-            Spacer(modifier = Modifier.size(16.dp))
-            Search(
-                text = text,
-                onValueChange = { text = it; findList(it) }
-            )
-            CourseList(
-                list = uiCourseState.data,
-                onClickItem = onClickItem,
-                onRemove = onRemoveItem,
-            )
-        }
-
-    }
-}
-
-@Preview
-@Composable
-fun ScreenCourse() {
-    val isLoading = false
-    Column(modifier = Modifier.padding(horizontal = 8.dp))  {
-        if(isLoading)
-        {
-            CircularProgressIndicator(
-                modifier = Modifier.width(64.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                trackColor = MaterialTheme.colorScheme.secondary,
-            )
-        }
-        else
-        {
-            Spacer(modifier = Modifier.size(16.dp))
-            Search("Intermarche") {}
-            CourseList(getListForTest(), {}, {})
-        }
-
-    }
-}
-
-
-@Composable
-fun Search(text: String, onValueChange: (newValue: String) -> Unit) {
-    TextField(
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null
-            )
-        },
-        value = text,
-        onValueChange = { onValueChange(it) },
-        modifier = Modifier.fillMaxWidth(1f)
-    )
-}
-
-@Preview
-@Composable
-fun Search() {
-    var text by rememberSaveable { mutableStateOf("") }
-
-    TextField(
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null
-            )
-        },
-        value = text,
-        onValueChange = { text = it },
-        modifier = Modifier.fillMaxWidth(1f)
-    )
-}
-
-@Composable
 fun CourseList(
-    list: List<Course>,
-    onClickItem: (item: Course) -> Unit,
-    onRemove: (item: Course) -> Unit,
+    state: UiCourseState,
+    onClickItem: (item: Courses) -> Unit,
+    onRemove: (item: Courses) -> Unit,
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        items(
-            items = list,
-            key = { course ->
-                course.id
+    if(state.loading)
+    {
+        CircularProgressIndicator(
+            modifier = Modifier.width(64.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            trackColor = MaterialTheme.colorScheme.secondary,
+        )
+    } else {
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(
+                items = state.data,
+                key = { course ->
+                    course.id
+                }
+            ) { course -> CourseItem(
+                    courseModel = course,
+                    onClickItem = onClickItem,
+                    onRemove = onRemove
+                )
             }
-        ) { course ->
-            CourseItem(
-                course = course,
-                onClickItem = onClickItem,
-                onRemove = onRemove
-            )
         }
     }
+
 }
 
 @Preview
@@ -214,9 +125,9 @@ fun DismissBackground(dismissState: DismissState) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseItem(
-    course: Course,
-    onClickItem: (item: Course) -> Unit,
-    onRemove: (item: Course) -> Unit,
+    courseModel: Courses,
+    onClickItem: (item: Courses) -> Unit,
+    onRemove: (item: Courses) -> Unit,
 ) {
     var show by remember { mutableStateOf(true) }
     val dismissState = rememberDismissState(
@@ -237,7 +148,7 @@ fun CourseItem(
                 DismissBackground(dismissState)
             },
             dismissContent = {
-                CourseItemCard(course, onClickItem)
+                CourseItemCard(courseModel, onClickItem)
             },
             directions = setOf(DismissDirection.EndToStart)
         )
@@ -245,7 +156,7 @@ fun CourseItem(
 
     LaunchedEffect(show) {
         if (!show) {
-            onRemove(course)
+            onRemove(courseModel)
         }
     }
 
@@ -257,7 +168,7 @@ fun CourseItem(
 fun CourseItem() {
     val context = LocalContext.current
     var show by remember { mutableStateOf(true) }
-    val currentItem by rememberUpdatedState(Course(0, "intermarche", Date().formatCourse(), R.drawable.icon_intermarche))
+    val currentItem by rememberUpdatedState(Courses(0, "intermarche", Date().formatCourse(), R.drawable.icon_intermarche))
     val dismissState = rememberDismissState(
         confirmValueChange = {
             if (it == DismissValue.DismissedToStart) {
@@ -294,8 +205,8 @@ fun CourseItem() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CourseItemCard(course: Course, onClickItem: (item: Course) -> Unit) {
-    Card(onClick = { onClickItem(course) }) {
+fun CourseItemCard(courseModel: Courses, onClickItem: (item: Courses) -> Unit) {
+    Card(onClick = { onClickItem(courseModel) }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -303,7 +214,7 @@ fun CourseItemCard(course: Course, onClickItem: (item: Course) -> Unit) {
                 .fillMaxWidth(1f)
         ) {
             Image(
-                painter = painterResource(id = course.icon),
+                painter = painterResource(id = courseModel.icon),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
@@ -312,7 +223,7 @@ fun CourseItemCard(course: Course, onClickItem: (item: Course) -> Unit) {
                     .clip(CircleShape)
             )
             Text(
-                text = course.name,
+                text = courseModel.name,
                 textAlign = TextAlign.Center,
                 maxLines = 2,
                 modifier = Modifier
@@ -320,7 +231,7 @@ fun CourseItemCard(course: Course, onClickItem: (item: Course) -> Unit) {
                     .padding(horizontal = 8.dp)
             )
             Text(
-                text = course.date,
+                text = courseModel.date,
                 fontStyle = FontStyle.Italic,
                 fontSize = MaterialTheme.typography.labelSmall.fontSize
             )
