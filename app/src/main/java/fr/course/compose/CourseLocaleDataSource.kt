@@ -45,4 +45,7 @@ class CourseLocaleDataSource @Inject constructor(private val courseDao: CourseDa
         courseDao.update(courses)
         getListe()
     }
+
+    suspend fun getCourseDetails(id: Int) = courseDao.getCourseById(id)
+
 }
