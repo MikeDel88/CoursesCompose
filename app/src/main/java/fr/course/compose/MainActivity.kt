@@ -131,35 +131,43 @@ fun ScreenCourseDetail(
 
 }
 
-@Preview
+@Preview(heightDp = 900)
 @Composable
 fun ScreenCourseDetail() {
-    val state by remember {
-        mutableStateOf(UiCourseDetailState(data = CourseWithDetail()))
+    val loading by remember {
+        mutableStateOf(false)
     }
-
-    if(state.loading) {
+    val course by remember {
+        mutableStateOf(Courses(name="Intermarche"))
+    }
+    val data by remember {
+        mutableStateOf(ArticleLocalDataSource.getListForTest())
+    }
+    if(loading) {
         Loading("Chargement des données...", modifier = Modifier)
-    } else if(state.data == null) {
+    } else if(course == null) {
         Text(text="Aucune données trouvé", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
     } else {
         Column(modifier = Modifier
             .padding(8.dp)
             .fillMaxHeight()) {
             FormCourse(
-                courses = state.data!!.courses!!,
+                courses = course,
                 onClickValidate = {}
             )
             Divider()
             LazyColumn(
+                modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(listOf(Articles(courseId = 1, name = "Patate"))) { article ->
+                items(data) { article ->
                     ArticleItem(article, {}, {})
                 }
             }
-            ArticleList()
+            FormArticle(
+                id = course.id,
+                onClickValidate = {})
         }
     }
 
