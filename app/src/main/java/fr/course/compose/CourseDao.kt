@@ -15,17 +15,17 @@ interface CourseDao {
     fun getAll(): Flow<List<Courses>>
 
     @Query("SELECT * FROM courses WHERE id = :coursesId")
-    fun getCourseById(coursesId: Int): Flow<Courses>
+    fun getCourseById(coursesId: Long): Flow<Courses>
 
-    @Query("SELECT * FROM courses WHERE name LIKE :name")
-    fun getCourseByName(name: String): Flow<List<Courses>>
+    @Insert(entity = Courses::class)
+    suspend fun insert(courses: Courses) : Long
 
-    @Insert
-    suspend fun insert(courses: Courses)
+    @Delete(entity = Courses::class)
+    fun delete(courses: Courses) : Int
 
-    @Delete
-    fun delete(courses: Courses)
+    @Update(entity = Courses::class)
+    fun update(courses: Courses) : Int
 
-    @Update
-    fun update(courses: Courses)
+    @Query("SELECT * FROM courses WHERE id = :id")
+    fun getCourseByIdWithArticles(id: Long): Flow<CourseWithDetail>
 }

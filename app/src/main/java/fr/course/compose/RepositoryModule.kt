@@ -11,5 +11,7 @@ import dagger.hilt.android.components.ActivityComponent
 abstract class RepositoryModule {
     @Binds
     abstract fun providesCoursesRepository(impl: CourseRepositoryImpl): CourseRepository
+    @Binds
+    abstract fun providesArticlesRepository(impl: ArticleRepositoryImpl): ArticleRepository
 
 }

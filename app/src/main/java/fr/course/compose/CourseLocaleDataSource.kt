@@ -22,30 +22,25 @@ class CourseLocaleDataSource @Inject constructor(private val courseDao: CourseDa
         }
 
     }
-    fun getListe(): Flow<List<Courses>> =courseDao.getAll()
+    fun getListe(): Flow<List<Courses>> = courseDao.getAll()
 
     suspend fun deleteCourse(courses: Courses) = withContext(Dispatchers.Default) {
         courseDao.delete(courses)
-        getListe()
     }
 
     suspend fun insertCourse(courses: Courses) = withContext(Dispatchers.Default) {
         courseDao.insert(courses)
-        getListe()
-    }
-
-    suspend fun getListeByNames(name: String) = withContext(Dispatchers.Default) {
-        if(name.isEmpty())
-            getListe()
-        else
-            courseDao.getCourseByName("%$name%")
     }
 
     suspend fun updateCourse(courses: Courses) = withContext(Dispatchers.Default) {
         courseDao.update(courses)
-        getListe()
     }
 
-    suspend fun getCourseDetails(id: Int) = courseDao.getCourseById(id)
+    suspend fun getCourseById(id: Long) = withContext(Dispatchers.Default) {
+        courseDao.getCourseById(id)
+    }
 
+    suspend fun getCourseByIdWithArticle(id: Long) = withContext(Dispatchers.Default) {
+        courseDao.getCourseByIdWithArticles(id)
+    }
 }

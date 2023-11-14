@@ -3,11 +3,16 @@ package fr.course.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,10 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,7 +34,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import fr.course.compose.CourseLocaleDataSource.Companion.getListForTest
 import fr.course.compose.ui.theme.CoursesComposeTheme
 
 @AndroidEntryPoint
@@ -54,7 +59,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    val context = LocalContext.current
     NavHost(navController, startDestination = "home") {
         composable(route = "home") {
             val courseViewModel: CourseViewModel =  hiltViewModel()
@@ -68,22 +72,99 @@ fun MyApp() {
             )
             //TODO: Navigation to ScreenCourseDetail(Update Course and add or update or delete article)
         }
-        composable("courses/{id}", arguments = listOf(navArgument("id") { type = NavType.IntType })
+        composable("courses/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
 
                 val courseDetailViewModel: CourseDetailViewModel = hiltViewModel()
                 val courseDetailState by courseDetailViewModel.uiState.collectAsState()
-                ScreenCourseDetail(courseDetailState)
+                ScreenCourseDetail(
+                    uiCourseDetailState = courseDetailState,
+                    onUpdateItem = { course -> courseDetailViewModel.majCourse(course)},
+                    onAddArticleItem = { article -> courseDetailViewModel.addArticle(article) },
+                    onDeleteArticleItem = { article -> courseDetailViewModel.deleteArticle(article) },
+                    onChangeQuantiteArticleItem = { article -> courseDetailViewModel.updateArticle(article) }
+                )
         }
     }
 }
 
 @Composable
-fun ScreenCourseDetail(uiCourseDetailState: UiCourseDetailState) {
-    Column {
-        Text(text= uiCourseDetailState.data?.name ?: "")
+fun ScreenCourseDetail(
+    uiCourseDetailState: UiCourseDetailState,
+    onUpdateItem: (course: Courses) -> Unit,
+    onAddArticleItem: (article: Articles) -> Unit,
+    onDeleteArticleItem: (article: Articles) -> Unit,
+    onChangeQuantiteArticleItem: (article: Articles) -> Unit
+) {
+    if(uiCourseDetailState.loading ) {
+        Loading("Chargement des données...", modifier = Modifier)
+    } else if(uiCourseDetailState.data?.courses == null) {
+        Text(text="Aucune données trouvé")
+    } else {
+        Column(modifier = Modifier
+            .padding(8.dp)
+            .fillMaxHeight()) {
+            FormCourse(
+                courses = uiCourseDetailState.data.courses!!,
+                onClickValidate = onUpdateItem
+            )
+            Divider()
+            if(uiCourseDetailState.data.articles.isNullOrEmpty()) {
+                Text(text = "Aucun article", modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(), textAlign = TextAlign.Center)
+            } else {
+                ArticleList(
+                    state = uiCourseDetailState,
+                    onQuantiteChange = onChangeQuantiteArticleItem,
+                    onDeleteArticle = onDeleteArticleItem,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                )
+            }
+            FormArticle(
+                id = uiCourseDetailState.data.courses!!.id,
+                onClickValidate = onAddArticleItem)
+        }
     }
+
 }
+
+@Preview
+@Composable
+fun ScreenCourseDetail() {
+    val state by remember {
+        mutableStateOf(UiCourseDetailState(data = CourseWithDetail()))
+    }
+
+    if(state.loading) {
+        Loading("Chargement des données...", modifier = Modifier)
+    } else if(state.data == null) {
+        Text(text="Aucune données trouvé", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+    } else {
+        Column(modifier = Modifier
+            .padding(8.dp)
+            .fillMaxHeight()) {
+            FormCourse(
+                courses = state.data!!.courses!!,
+                onClickValidate = {}
+            )
+            Divider()
+            LazyColumn(
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(listOf(Articles(courseId = 1, name = "Patate"))) { article ->
+                    ArticleItem(article, {}, {})
+                }
+            }
+            ArticleList()
+        }
+    }
+
+}
+
 @Composable
 fun ScreenCourse(
     uiCourseState: UiCourseState,
@@ -110,7 +191,7 @@ fun ScreenCourse(
                 .weight(1f)
                 .fillMaxWidth()
         )
-        FormCourse("", onAddItem)
+        FormCourse(Courses(name=""), onAddItem)
     }
 }
 
@@ -121,11 +202,11 @@ fun ScreenCourse() {
         .padding(8.dp)
         .fillMaxHeight())  {
         Search("Intermarche") {}
-        CourseList(UiCourseState(data = getListForTest()), {}, {},
+        CourseList(UiCourseState(loading = true), {}, {},
             Modifier
                 .weight(1f)
                 .fillMaxWidth())
-        FormCourse("Intermarche") {}
+        FormCourse(Courses(name = "Intermarche")) {}
     }
 }
 

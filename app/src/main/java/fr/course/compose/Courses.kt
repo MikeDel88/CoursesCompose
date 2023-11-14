@@ -10,10 +10,10 @@ import java.util.Locale
 @Entity
 data class Courses(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0,
     var name: String,
     var date: String = Date().formatCourse(),
-    val icon: Int = getDrawable(name),
+    var icon: Int = getDrawable(name),
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val createdTime: String = "",
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")

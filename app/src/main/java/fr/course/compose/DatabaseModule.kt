@@ -13,8 +13,13 @@ import javax.inject.Singleton
 @Module
 class DatabaseModule {
     @Provides
-    fun provideChannelDao(appDatabase: CourseAppDatabase): CourseDao {
+    fun provideCourseDao(appDatabase: CourseAppDatabase): CourseDao {
         return appDatabase.courseDao()
+    }
+
+    @Provides
+    fun provideArticleDao(appDatabase: CourseAppDatabase): ArticleDao {
+        return appDatabase.articleDao()
     }
 
     @Provides
