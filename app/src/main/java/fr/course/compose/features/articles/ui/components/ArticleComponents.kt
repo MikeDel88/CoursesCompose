@@ -32,6 +32,7 @@ import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -291,7 +292,7 @@ fun ArticleItemCard() {
 @Composable
 fun FormArticle(id: Long, onClickValidate: (articles: Articles) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
-    var quantite by rememberSaveable { mutableStateOf(1) }
+    var quantite by rememberSaveable { mutableIntStateOf(1) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -329,6 +330,7 @@ fun FormArticle(id: Long, onClickValidate: (articles: Articles) -> Unit) {
                 onClickValidate(Articles(courseId = id, name = text, quantite = quantite))
                 text = ""
                 quantite = 1 },
+            enabled = text.isNotEmpty(),
             modifier = Modifier.fillMaxWidth()) {
             Text(text= stringResource(R.string.bt_save).uppercase(), maxLines = 1)
         }
@@ -339,7 +341,7 @@ fun FormArticle(id: Long, onClickValidate: (articles: Articles) -> Unit) {
 @Composable
 fun FormArticle() {
     var text by rememberSaveable { mutableStateOf("") }
-    var quantite by rememberSaveable { mutableStateOf(1) }
+    var quantite by rememberSaveable { mutableIntStateOf(1) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -371,7 +373,7 @@ fun FormArticle() {
                 Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
             }
         }
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = {}, modifier = Modifier.fillMaxWidth(), enabled = text.isNotEmpty()) {
             Text(text=stringResource(R.string.bt_save).uppercase(), maxLines = 1)
         }
     }
