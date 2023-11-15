@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import fr.course.compose.features.articles.database.CourseWithDetail
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,7 @@ interface CourseDao {
     @Update(entity = Courses::class)
     fun update(courses: Courses) : Int
 
+    @Transaction
     @Query("SELECT * FROM courses WHERE id = :id")
     fun getCourseByIdWithArticles(id: Long): Flow<CourseWithDetail>
 }
