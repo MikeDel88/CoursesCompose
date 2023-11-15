@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CoursesCompose</string>
+    <string name="app_name">Courses App</string>
     <string name="load_generic">Chargement des données…</string>
     <string name="load_data_not_found">Aucune données trouvé</string>
     <string name="article_not_found">Aucun article</string>
