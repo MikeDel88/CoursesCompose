@@ -52,7 +52,7 @@ import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.common.ui.components.DismissBackground
 import fr.course.compose.common.ui.components.Loading
-import fr.course.compose.features.courses.ui.UiCourseDetailState
+import fr.course.compose.features.articles.ui.UiCourseDetailState
 import kotlinx.coroutines.delay
 import java.util.Locale
 

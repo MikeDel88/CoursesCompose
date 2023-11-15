@@ -47,9 +47,9 @@ import fr.course.compose.features.articles.ui.components.ArticleItem
 import fr.course.compose.features.articles.ui.components.ArticleList
 import fr.course.compose.features.articles.ui.components.FormArticle
 import fr.course.compose.features.courses.database.Courses
-import fr.course.compose.features.courses.ui.CourseDetailViewModel
+import fr.course.compose.features.articles.ui.CourseDetailViewModel
 import fr.course.compose.features.courses.ui.CourseViewModel
-import fr.course.compose.features.courses.ui.UiCourseDetailState
+import fr.course.compose.features.articles.ui.UiCourseDetailState
 import fr.course.compose.features.courses.ui.UiCourseState
 import fr.course.compose.features.courses.ui.components.CourseList
 import fr.course.compose.features.courses.ui.components.FormCourse

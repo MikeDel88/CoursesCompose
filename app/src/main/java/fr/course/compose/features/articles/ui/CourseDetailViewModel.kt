@@ -1,4 +1,4 @@
-package fr.course.compose.features.courses.ui
+package fr.course.compose.features.articles.ui
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
