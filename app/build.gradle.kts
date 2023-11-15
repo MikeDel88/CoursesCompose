@@ -77,6 +77,7 @@ dependencies {
 
     // Ajout
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.5")
     val daggerVersion = "2.44"
     implementation("com.google.dagger:hilt-android:$daggerVersion")
     kapt("com.google.dagger:hilt-android-compiler:$daggerVersion")
@@ -98,9 +99,7 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.06.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
-    // For instrumented tests.
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.44")
-    // ...with Kotlin.
     kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.44")
 
 

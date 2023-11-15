@@ -3,6 +3,8 @@ package fr.course.compose.common.ui.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,9 +89,25 @@ fun MyApp() {
                 onRemoveItem =  { course -> courseViewModel.removeCourse(course) },
                 onAddItem = { course -> courseViewModel.addCourse(course) }
             )
-            //TODO: Navigation to ScreenCourseDetail(Update Course and add or update or delete article)
         }
-        composable("courses/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })
+        composable(route = "courses/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.LongType }),
+            enterTransition = { slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(700)
+            ) },
+            exitTransition = {slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(700)
+            ) },
+            popEnterTransition = { slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(700)
+            ) },
+            popExitTransition = {  slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(700)
+            ) }
         ) { backStackEntry ->
 
                 val courseDetailViewModel: CourseDetailViewModel = hiltViewModel()
