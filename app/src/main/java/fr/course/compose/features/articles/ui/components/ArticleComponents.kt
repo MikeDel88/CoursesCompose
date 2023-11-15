@@ -40,11 +40,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fr.course.compose.R
 import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.common.ui.components.DismissBackground
@@ -328,7 +330,7 @@ fun FormArticle(id: Long, onClickValidate: (articles: Articles) -> Unit) {
                 text = ""
                 quantite = 1 },
             modifier = Modifier.fillMaxWidth()) {
-            Text(text="ENREGISTRER", maxLines = 1)
+            Text(text= stringResource(R.string.bt_save).uppercase(), maxLines = 1)
         }
     }
 }
@@ -370,7 +372,7 @@ fun FormArticle() {
             }
         }
         Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-            Text(text="ENREGISTRER", maxLines = 1)
+            Text(text=stringResource(R.string.bt_save).uppercase(), maxLines = 1)
         }
     }
 }

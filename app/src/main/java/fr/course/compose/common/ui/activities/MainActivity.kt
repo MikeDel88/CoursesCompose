@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,21 +35,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import fr.course.compose.features.articles.ui.components.ArticleItem
-import fr.course.compose.features.articles.ui.components.ArticleList
-import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
-import fr.course.compose.features.articles.database.Articles
-import fr.course.compose.features.articles.ui.components.FormArticle
-import fr.course.compose.features.courses.ui.CourseDetailViewModel
-import fr.course.compose.features.courses.ui.components.CourseList
-import fr.course.compose.features.courses.ui.CourseViewModel
-import fr.course.compose.features.courses.database.Courses
-import fr.course.compose.features.courses.ui.components.FormCourse
-import fr.course.compose.features.courses.ui.UiCourseDetailState
-import fr.course.compose.features.courses.ui.UiCourseState
+import fr.course.compose.R
 import fr.course.compose.common.ui.components.Loading
 import fr.course.compose.common.ui.components.Search
 import fr.course.compose.common.ui.theme.CoursesComposeTheme
+import fr.course.compose.features.articles.database.Articles
+import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
+import fr.course.compose.features.articles.ui.components.ArticleItem
+import fr.course.compose.features.articles.ui.components.ArticleList
+import fr.course.compose.features.articles.ui.components.FormArticle
+import fr.course.compose.features.courses.database.Courses
+import fr.course.compose.features.courses.ui.CourseDetailViewModel
+import fr.course.compose.features.courses.ui.CourseViewModel
+import fr.course.compose.features.courses.ui.UiCourseDetailState
+import fr.course.compose.features.courses.ui.UiCourseState
+import fr.course.compose.features.courses.ui.components.CourseList
+import fr.course.compose.features.courses.ui.components.FormCourse
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -77,6 +79,7 @@ fun MyApp() {
         composable(route = "home") {
             val courseViewModel: CourseViewModel =  hiltViewModel()
             val courseUiState by courseViewModel.uiState.collectAsState()
+
             ScreenCourse(
                 uiCourseState = courseUiState,
                 findList = { name -> courseViewModel.findCourse(name) },
@@ -111,9 +114,9 @@ fun ScreenCourseDetail(
     onChangeQuantiteArticleItem: (article: Articles) -> Unit
 ) {
     if(uiCourseDetailState.loading ) {
-        Loading("Chargement des données...", modifier = Modifier)
+        Loading(stringResource(R.string.load_generic), modifier = Modifier)
     } else if(uiCourseDetailState.data?.courses == null) {
-        Text(text="Aucune données trouvé")
+        Text(text= stringResource(R.string.load_data_not_found))
     } else {
         Column(modifier = Modifier
             .padding(8.dp)
@@ -124,7 +127,7 @@ fun ScreenCourseDetail(
             )
             Divider()
             if(uiCourseDetailState.data.articles.isNullOrEmpty()) {
-                Text(text = "Aucun article", modifier = Modifier
+                Text(text = stringResource(R.string.article_not_found), modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(), textAlign = TextAlign.Center)
             } else {
@@ -158,9 +161,9 @@ fun ScreenCourseDetail() {
         mutableStateOf(ArticleLocalDataSource.getListForTest())
     }
     if(loading) {
-        Loading("Chargement des données...", modifier = Modifier)
+        Loading(stringResource(R.string.load_generic), modifier = Modifier)
     } else if(course == null) {
-        Text(text="Aucune données trouvé", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Text(text=stringResource(R.string.load_data_not_found), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
     } else {
         Column(modifier = Modifier
             .padding(8.dp)

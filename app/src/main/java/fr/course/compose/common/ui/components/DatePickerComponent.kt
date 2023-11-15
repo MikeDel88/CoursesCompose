@@ -10,7 +10,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import fr.course.compose.R
 import java.time.Instant
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -32,7 +34,7 @@ fun SimpleDatePickerInDatePickerDialog(
             confirmButton = {
                 Button(onClick = { onValueChange(datePickerState.selectedDateMillis); onDismiss() }
                 ) {
-                    Text(text="OK")
+                    Text(text= stringResource(R.string.bt_ok))
                 }
             },
         ) {

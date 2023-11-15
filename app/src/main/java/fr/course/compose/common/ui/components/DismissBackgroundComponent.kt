@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import fr.course.compose.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +37,7 @@ fun DismissBackground(dismissState: DismissState) {
     ) {
         Icon(
             Icons.Default.Delete,
-            contentDescription = "delete"
+            contentDescription = stringResource(R.string.content_description_delete)
         )
     }
 }

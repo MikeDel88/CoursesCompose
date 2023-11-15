@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">CoursesCompose</string>
+    <string name="load_generic">Chargement des données…</string>
+    <string name="load_data_not_found">Aucune données trouvé</string>
+    <string name="article_not_found">Aucun article</string>
+    <string name="bt_ok">OK</string>
+    <string name="content_description_delete">delete</string>
+    <string name="bt_save">enregistrer</string>
+    <string name="bt_valider">valider</string>
 </resources>

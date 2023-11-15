@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -309,7 +310,7 @@ fun FormCourse(courses: Courses, onClickValidate: (courses: Courses) -> Unit) {
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text="VALIDER", maxLines = 1)
+            Text(text= stringResource(R.string.bt_valider).uppercase(), maxLines = 1)
         }
     }
 }
@@ -342,7 +343,7 @@ fun FormCourse() {
             }
         }
         Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-            Text(text="VALIDER", maxLines = 1)
+            Text(text=stringResource(R.string.bt_valider).uppercase(), maxLines = 1)
         }
     }
 }

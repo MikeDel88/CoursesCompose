@@ -13,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fr.course.compose.R
 
 @Composable
 fun Loading(text: String, modifier: Modifier) {
@@ -34,7 +36,8 @@ fun Loading(text: String, modifier: Modifier) {
 @Preview
 @Composable
 fun Loading() {
-    val loaderText by rememberSaveable { mutableStateOf("Chargement en cours...") }
+    val text = stringResource(R.string.load_generic)
+    val loaderText by rememberSaveable { mutableStateOf(text) }
     Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         CircularProgressIndicator(
             modifier = Modifier
