@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import fr.course.compose.features.courses.database.Courses
@@ -15,6 +16,7 @@ import fr.course.compose.features.courses.database.Courses
         childColumns = arrayOf("courseId"),
         onDelete = ForeignKey.CASCADE
     )],
+    indices = [Index(value = ["courseId"])]
 )
 data class Articles(
     @PrimaryKey(autoGenerate = true)
