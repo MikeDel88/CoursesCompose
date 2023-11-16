@@ -9,6 +9,7 @@ import fr.course.compose.features.articles.repository.ArticleRepositoryImpl
 import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.features.articles.database.CourseWithDetail
 import fr.course.compose.features.courses.database.Courses
+import fr.course.compose.features.courses.database.getDrawable
 import fr.course.compose.features.courses.repository.CourseRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +39,7 @@ class CourseDetailViewModel @Inject constructor(
 
     fun majCourse(courses: Courses) {
         viewModelScope.launch {
+            courses.icon = getDrawable(courses.name)
             val rowsAffected = courseRepository.updateCourse(courses)
             Log.d("CourseDetailViewModel", "Update : $rowsAffected")
         }
