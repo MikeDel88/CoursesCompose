@@ -31,6 +31,7 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
 
     private fun getListe() {
         viewModelScope.launch {
+            delay(500) // Delay pour laisser le temps à l'écran de refresh.
             courseRepository.getListeOfCourse().collect { list ->
                 listOfCourse = list.toMutableList()
                 filterListOfCourse()

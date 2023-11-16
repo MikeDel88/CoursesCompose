@@ -17,6 +17,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -53,8 +57,12 @@ fun ScreenCourse(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -112,7 +120,20 @@ fun ScreenCourse(
                 CourseList(
                     state = uiCourseState,
                     onClickItem = onClickItem,
-                    onRemove = onRemoveItem,
+                    onRemove = { course ->
+                        scope.launch {
+                            val result = snackbarHostState
+                                .showSnackbar(
+                                    message = "Course ${course.name} effacé",
+                                    actionLabel = "Annuler",
+                                    duration = SnackbarDuration.Long
+                                )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> { onRefreshList() }
+                                SnackbarResult.Dismissed -> { onRemoveItem(course) }
+                            }
+                        }
+                   },
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()

@@ -39,13 +39,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import fr.course.compose.R
 import fr.course.compose.common.ui.components.DismissBackground
 import fr.course.compose.common.ui.components.Loading
-import fr.course.compose.R
-import fr.course.compose.features.courses.datasource.CourseLocaleDataSource.Companion.getListForTest
 import fr.course.compose.features.courses.database.Courses
-import fr.course.compose.features.courses.ui.UiCourseState
 import fr.course.compose.features.courses.database.formatCourse
+import fr.course.compose.features.courses.datasource.CourseLocaleDataSource.Companion.getListForTest
+import fr.course.compose.features.courses.ui.UiCourseState
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.util.Locale
@@ -99,7 +99,7 @@ fun CourseList() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(getListForTest()) { course ->
-                CourseItem(course, {}, {})
+                CourseItem(course, {}, { true })
             }
         }
     }
@@ -113,6 +113,7 @@ fun CourseItem(
     onRemove: (item: Courses) -> Unit,
 ) {
     var show by remember { mutableStateOf(true) }
+
     val dismissState = rememberDismissState(
         confirmValueChange = {
             if (it == DismissValue.DismissedToStart) {

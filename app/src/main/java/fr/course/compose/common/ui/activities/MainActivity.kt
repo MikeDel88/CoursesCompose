@@ -1,6 +1,7 @@
 package fr.course.compose.common.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -56,6 +57,8 @@ fun MyApp() {
         composable(route = "home") {
             val courseViewModel: CourseViewModel =  hiltViewModel()
             val courseUiState by courseViewModel.uiState.collectAsState()
+
+            Log.d("MainActivity", "State : $courseUiState")
 
             ScreenCourse(
                 uiCourseState = courseUiState,
