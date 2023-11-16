@@ -90,13 +90,12 @@ fun ScreenCourse(
                 .padding(innerPadding)
                 .fillMaxHeight()
         ) {
-
             SearchBar(
                 query = text,
                 onQueryChange = { text = it; findList(it) },
                 onSearch = {},
                 placeholder = {
-                    Text(text = "Search courses")
+                    Text(text = "")
                 },
                 leadingIcon = {
                     Icon(
@@ -176,7 +175,7 @@ fun ScreenCourse() {
                     showBottomSheet = true
                 },
                 icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
-                text = { Text(text = "Créer une course") },
+                text = { Text(text = stringResource(id = R.string.bt_create_course)) },
             )
         },
         modifier = Modifier
@@ -190,7 +189,7 @@ fun ScreenCourse() {
                     onQueryChange = { },
                     onSearch = {},
                     placeholder = {
-                        Text(text = "Search courses")
+                        Text(text = "")
                     },
                     leadingIcon = {
                         Icon(

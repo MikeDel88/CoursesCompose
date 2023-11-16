@@ -51,13 +51,16 @@ fun FormCourse(courses: Courses, modifier: Modifier, onClickValidate: (courses: 
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.size(8.dp))
-        Button( onClick = {
-            courses.name = text
-            courses.date = dateSelected
-            courses.icon = getDrawable(text)
+        Button(
+            enabled = text.isNotEmpty(),
+            onClick = {
+                courses.name = text
+                courses.date = dateSelected
+                courses.icon = getDrawable(text)
 
-            onClickValidate(courses)
-        }) {
+                onClickValidate(courses)
+            }
+        ) {
             Icon(Icons.Default.Done, contentDescription = stringResource(id = R.string.bt_valider))
         }
 
@@ -91,7 +94,10 @@ fun FormCourse() {
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.size(8.dp))
-        Button(onClick = {}) {
+        Button(
+            enabled = text.isNotEmpty(),
+            onClick = {}
+        ) {
             Icon(Icons.Default.Done, contentDescription = stringResource(id = R.string.bt_valider))
         }
 
