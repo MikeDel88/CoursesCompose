@@ -40,4 +40,7 @@ fun getDrawable(name: String): Int {
     }
 }
 
+fun String.firstLetterUppercase(): String = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+
 
