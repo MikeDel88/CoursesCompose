@@ -4,11 +4,11 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +29,7 @@ import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -42,10 +43,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import fr.course.compose.features.articles.database.Articles
-import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.common.ui.components.DismissBackground
 import fr.course.compose.common.ui.components.Loading
+import fr.course.compose.features.articles.database.Articles
+import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.features.articles.ui.UiCourseDetailState
 import kotlinx.coroutines.delay
 import java.util.Locale
@@ -63,7 +64,6 @@ fun ArticleList(
     } else {
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = modifier
         ) {
             items(
@@ -96,8 +96,8 @@ fun ArticleList() {
         Loading("", Modifier)
     } else {
         LazyColumn(
+            modifier = Modifier.padding(horizontal = 8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             items(list) { article ->
                 ArticleItem(article, {}, {})
@@ -195,7 +195,8 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(12.dp, 8.dp)
+                .height(40.dp)
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth(1f)
         ) {
             Text(
@@ -205,7 +206,7 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
                 maxLines = 2,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .padding(end = 8.dp)
             )
             IconButton(
                 modifier = Modifier.size(16.dp),
@@ -240,13 +241,14 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
 @Preview
 @Composable
 fun ArticleItemCard() {
-    var quantite by remember { mutableStateOf(50) }
+    var quantite by remember { mutableIntStateOf(50) }
     var isFinished by remember { mutableStateOf(true) }
     Card(onClick = { isFinished = !isFinished }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(12.dp, 8.dp)
+                .height(40.dp)
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth(1f)
         ) {
             Text(
@@ -256,7 +258,7 @@ fun ArticleItemCard() {
                 maxLines = 2,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .padding(end = 8.dp)
             )
             IconButton(
                 modifier = Modifier.size(16.dp),
