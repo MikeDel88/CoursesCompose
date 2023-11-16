@@ -24,8 +24,8 @@ fun Loading(text: String, modifier: Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         CircularProgressIndicator(
             modifier = Modifier
-                .width(100.dp)
-                .height(100.dp),
+                .width(50.dp)
+                .height(50.dp),
             color = MaterialTheme.colorScheme.surfaceVariant,
             trackColor = MaterialTheme.colorScheme.secondary,
         )
@@ -41,8 +41,8 @@ fun Loading() {
     Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         CircularProgressIndicator(
             modifier = Modifier
-                .width(100.dp)
-                .height(100.dp),
+                .width(50.dp)
+                .height(50.dp),
             color = MaterialTheme.colorScheme.surfaceVariant,
             trackColor = MaterialTheme.colorScheme.secondary,
         )

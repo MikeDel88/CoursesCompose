@@ -45,6 +45,7 @@ fun ScreenCourseDetail(
             .fillMaxHeight()) {
             FormCourse(
                 courses = uiCourseDetailState.data.courses!!,
+                modifier = Modifier,
                 onClickValidate = onUpdateItem
             )
             Divider()
@@ -92,6 +93,7 @@ fun ScreenCourseDetail() {
             .fillMaxHeight()) {
             FormCourse(
                 courses = course,
+                modifier = Modifier,
                 onClickValidate = {}
             )
             Divider()

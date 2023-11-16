@@ -39,7 +39,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MyApp()
-                    // TODO: Voir pour un ActionFloatingButton pour ajouter une Course
                     // TODO: Voir pour afficher une BottonSheetBehavior lors du click pour afficher le formulaire
                     // TODO: Pareil pour l'ajout d'un article.
                     // TODO: Voir pour intégrer une Image de fond en plus gros avec la possibilité de modifier à la volée.
@@ -63,7 +62,8 @@ fun MyApp() {
                 findList = { name -> courseViewModel.findCourse(name) },
                 onClickItem = { course -> navController.navigate("courses/${course.id}")},
                 onRemoveItem =  { course -> courseViewModel.removeCourse(course) },
-                onAddItem = { course -> courseViewModel.addCourse(course) }
+                onAddItem = { course -> courseViewModel.addCourse(course) },
+                onRefreshList = { courseViewModel.refreshList() }
             )
         }
         composable(route = "courses/{id}",

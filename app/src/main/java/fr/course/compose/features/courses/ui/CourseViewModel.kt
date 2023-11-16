@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.course.compose.features.courses.database.Courses
 import fr.course.compose.features.courses.repository.CourseRepositoryImpl
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +36,12 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
                 filterListOfCourse()
             }
         }
+    }
+
+    fun refreshList() {
+        Log.d("CourseViewModel", "refreshList()")
+        _uiState.value = UiCourseState(loading = true)
+        getListe()
     }
 
     fun findCourse(name: String) {

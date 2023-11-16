@@ -1,17 +1,16 @@
 package fr.course.compose.features.courses.ui.components
 
 import android.os.Build
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,46 +30,43 @@ import fr.course.compose.features.courses.database.getDrawable
 import java.util.Date
 
 @Composable
-fun FormCourse(courses: Courses, onClickValidate: (courses: Courses) -> Unit) {
+fun FormCourse(courses: Courses, modifier: Modifier, onClickValidate: (courses: Courses) -> Unit) {
 
     var text by rememberSaveable { mutableStateOf(courses.name) }
     var dateSelected by rememberSaveable { mutableStateOf(courses.date) }
     var openDatePicker by rememberSaveable { mutableStateOf(false) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                modifier = Modifier.weight(1f)
-            )
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
-                SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
-                        date -> dateSelected = if(date != null) Date(date).formatCourse() else Date().formatCourse()
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        TextField(
+            trailingIcon = {
+                IconButton(
+                    onClick = { openDatePicker = true },
+                    colors =  IconButtonDefaults.filledIconButtonColors()
+                ) {
+                    Icon(Icons.Default.DateRange, contentDescription = null)
                 }
-
-            IconButton(
-                onClick = { openDatePicker = true },
-                colors =  IconButtonDefaults.filledIconButtonColors()
-            ) {
-                Icon(Icons.Default.DateRange, contentDescription = null)
-            }
-        }
-        Button(
-            onClick =
-            {
-                courses.name = text
-                courses.date = dateSelected
-                courses.icon = getDrawable(text)
-
-                onClickValidate(courses)
             },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text= stringResource(R.string.bt_valider).uppercase(), maxLines = 1)
+            value = text,
+            onValueChange = { text = it },
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(Modifier.size(8.dp))
+        Button( onClick = {
+            courses.name = text
+            courses.date = dateSelected
+            courses.icon = getDrawable(text)
+
+            onClickValidate(courses)
+        }) {
+            Icon(Icons.Default.Done, contentDescription = stringResource(id = R.string.bt_valider))
         }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
+            SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
+                    date -> dateSelected = if(date != null) Date(date).formatCourse() else Date().formatCourse()
+            }
     }
+
 }
 
 @Preview
@@ -80,28 +76,30 @@ fun FormCourse() {
     var dateSelected by rememberSaveable { mutableStateOf(Date().formatCourse()) }
     var openDatePicker by rememberSaveable { mutableStateOf(false) }
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                modifier = Modifier.weight(1f)
-            )
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                SimpleDatePickerInDatePickerDialog(openDatePicker, { openDatePicker = false }) {
-                        date -> dateSelected = if(date != null) Date(date).formatCourse() else ""
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TextField(
+            trailingIcon = {
+                IconButton(
+                    onClick = { openDatePicker = true },
+                    colors =  IconButtonDefaults.filledIconButtonColors()
+                ) {
+                    Icon(Icons.Default.DateRange, contentDescription = null)
                 }
+            },
+            value = text,
+            onValueChange = { text = it },
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(Modifier.size(8.dp))
+        Button(onClick = {}) {
+            Icon(Icons.Default.Done, contentDescription = stringResource(id = R.string.bt_valider))
+        }
 
-            IconButton(
-                onClick = { openDatePicker = true },
-                colors =  IconButtonDefaults.filledIconButtonColors()
-            ) {
-                Icon(Icons.Default.DateRange, contentDescription = null)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            SimpleDatePickerInDatePickerDialog(openDatePicker, { openDatePicker = false }) {
+                    date -> dateSelected = if(date != null) Date(date).formatCourse() else ""
             }
-        }
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-            Text(text= stringResource(R.string.bt_valider).uppercase(), maxLines = 1)
-        }
     }
+
+
 }
