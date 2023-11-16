@@ -5,31 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -37,22 +19,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import fr.course.compose.R
-import fr.course.compose.common.ui.components.Loading
-import fr.course.compose.common.ui.components.Search
 import fr.course.compose.common.ui.theme.CoursesComposeTheme
-import fr.course.compose.features.articles.database.Articles
-import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
-import fr.course.compose.features.articles.ui.components.ArticleItem
-import fr.course.compose.features.articles.ui.components.ArticleList
-import fr.course.compose.features.articles.ui.components.FormArticle
-import fr.course.compose.features.courses.database.Courses
 import fr.course.compose.features.articles.ui.CourseDetailViewModel
+import fr.course.compose.features.articles.ui.components.ScreenCourseDetail
 import fr.course.compose.features.courses.ui.CourseViewModel
-import fr.course.compose.features.articles.ui.UiCourseDetailState
-import fr.course.compose.features.courses.ui.UiCourseState
-import fr.course.compose.features.courses.ui.components.CourseList
-import fr.course.compose.features.courses.ui.components.FormCourse
+import fr.course.compose.features.courses.ui.components.ScreenCourse
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -68,6 +39,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MyApp()
+                    // TODO: Voir pour un ActionFloatingButton pour ajouter une Course
+                    // TODO: Voir pour afficher une BottonSheetBehavior lors du click pour afficher le formulaire
+                    // TODO: Pareil pour l'ajout d'un article.
+                    // TODO: Voir pour intégrer une Image de fond en plus gros avec la possibilité de modifier à la volée.
+                    // TODO: Voir transition avec l'icone qui grossit jusqu'à ouvrir le détail.
                 }
             }
         }
@@ -123,135 +99,8 @@ fun MyApp() {
     }
 }
 
-@Composable
-fun ScreenCourseDetail(
-    uiCourseDetailState: UiCourseDetailState,
-    onUpdateItem: (course: Courses) -> Unit,
-    onAddArticleItem: (article: Articles) -> Unit,
-    onDeleteArticleItem: (article: Articles) -> Unit,
-    onChangeQuantiteArticleItem: (article: Articles) -> Unit
-) {
-    if(uiCourseDetailState.loading ) {
-        Loading(stringResource(R.string.load_generic), modifier = Modifier)
-    } else if(uiCourseDetailState.data?.courses == null) {
-        Text(text= stringResource(R.string.load_data_not_found))
-    } else {
-        Column(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxHeight()) {
-            FormCourse(
-                courses = uiCourseDetailState.data.courses!!,
-                onClickValidate = onUpdateItem
-            )
-            Divider()
-            if(uiCourseDetailState.data.articles.isNullOrEmpty()) {
-                Text(text = stringResource(R.string.article_not_found), modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(), textAlign = TextAlign.Center)
-            } else {
-                ArticleList(
-                    state = uiCourseDetailState,
-                    onQuantiteChange = onChangeQuantiteArticleItem,
-                    onDeleteArticle = onDeleteArticleItem,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                )
-            }
-            FormArticle(
-                id = uiCourseDetailState.data.courses!!.id,
-                onClickValidate = onAddArticleItem)
-        }
-    }
 
-}
 
-@Preview(heightDp = 900)
-@Composable
-fun ScreenCourseDetail() {
-    val loading by remember {
-        mutableStateOf(false)
-    }
-    val course by remember {
-        mutableStateOf(Courses(name="Intermarche"))
-    }
-    val data by remember {
-        mutableStateOf(ArticleLocalDataSource.getListForTest())
-    }
-    if(loading) {
-        Loading(stringResource(R.string.load_generic), modifier = Modifier)
-    } else if(course == null) {
-        Text(text=stringResource(R.string.load_data_not_found), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-    } else {
-        Column(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxHeight()) {
-            FormCourse(
-                courses = course,
-                onClickValidate = {}
-            )
-            Divider()
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                items(data) { article ->
-                    ArticleItem(article, {}, {})
-                }
-            }
-            FormArticle(
-                id = course.id,
-                onClickValidate = {})
-        }
-    }
 
-}
-
-@Composable
-fun ScreenCourse(
-    uiCourseState: UiCourseState,
-    findList: (text: String) -> Unit,
-    onClickItem: (item: Courses) -> Unit,
-    onRemoveItem : (course: Courses) -> Unit,
-    onAddItem : (course: Courses) -> Unit
-)
-{
-    var text by rememberSaveable { mutableStateOf("") }
-
-    Column(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxHeight())  {
-        Search(
-            text = text,
-            onValueChange = { text = it; findList(it) }
-        )
-        CourseList(
-            state = uiCourseState,
-            onClickItem = onClickItem,
-            onRemove = onRemoveItem,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        )
-        FormCourse(Courses(name=""), onAddItem)
-    }
-}
-
-@Preview(heightDp = 900)
-@Composable
-fun ScreenCourse() {
-    Column(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxHeight())  {
-        Search("Intermarche") {}
-        CourseList(
-            UiCourseState(loading = true), {}, {},
-            Modifier
-                .weight(1f)
-                .fillMaxWidth())
-        FormCourse(Courses(name = "Intermarche")) {}
-    }
-}
 
 
