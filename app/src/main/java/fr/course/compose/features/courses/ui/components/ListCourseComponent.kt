@@ -43,12 +43,12 @@ import fr.course.compose.R
 import fr.course.compose.common.ui.components.DismissBackground
 import fr.course.compose.common.ui.components.Loading
 import fr.course.compose.features.courses.database.Courses
+import fr.course.compose.features.courses.database.firstLetterUppercase
 import fr.course.compose.features.courses.database.formatCourse
 import fr.course.compose.features.courses.datasource.CourseLocaleDataSource.Companion.getListForTest
 import fr.course.compose.features.courses.ui.UiCourseState
 import kotlinx.coroutines.delay
 import java.util.Date
-import java.util.Locale
 
 
 @Composable
@@ -207,7 +207,7 @@ fun CourseItemCard(courseModel: Courses, onClickItem: (item: Courses) -> Unit) {
                     .clip(CircleShape)
             )
             Text(
-                text = courseModel.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                text = courseModel.name.firstLetterUppercase(),
                 textAlign = TextAlign.Center,
                 maxLines = 2,
                 modifier = Modifier
