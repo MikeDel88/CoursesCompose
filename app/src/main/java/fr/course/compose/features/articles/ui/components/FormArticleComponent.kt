@@ -140,14 +140,14 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
                     TextButton(
                         onClick = { openAlertDialog = false }
                     ) {
-                        Text(stringResource(id = R.string.bt_ok))
+                        Text(stringResource(id = R.string.bt_ok).uppercase())
                     }
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false }
+                        onClick = { openAlertDialog = false; quantite = 1 }
                     ) {
-                        Text(stringResource(R.string.bt_annuler))
+                        Text(stringResource(R.string.bt_annuler).uppercase())
                     }
                 }
             )
@@ -246,21 +246,20 @@ fun FormArticle() {
                             Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
                         }
                     }
-
                 },
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = {
                     TextButton(
                         onClick = { openAlertDialog = false }
                     ) {
-                        Text(stringResource(id = R.string.bt_ok))
+                        Text(stringResource(id = R.string.bt_ok).uppercase())
                     }
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false }
+                        onClick = { openAlertDialog = false;  }
                     ) {
-                        Text(stringResource(R.string.bt_annuler))
+                        Text(stringResource(R.string.bt_annuler).uppercase())
                     }
                 }
             )

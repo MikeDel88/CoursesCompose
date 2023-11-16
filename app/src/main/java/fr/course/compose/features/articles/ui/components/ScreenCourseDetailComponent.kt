@@ -114,7 +114,7 @@ fun ScreenCourseDetail(
                                     .showSnackbar(
                                         message = "Article ${article.name} effacé",
                                         actionLabel = "Annuler",
-                                        duration = SnackbarDuration.Long
+                                        duration = SnackbarDuration.Short
                                     )
                                 when (result) {
                                     SnackbarResult.ActionPerformed -> { onRefreshList(uiCourseDetailState.data.courses!!.id) }
