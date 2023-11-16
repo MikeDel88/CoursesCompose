@@ -8,4 +8,5 @@
     <string name="bt_save">enregistrer</string>
     <string name="bt_valider">valider</string>
     <string name="bt_create_course">Créer une course</string>
+    <string name="bt_create_article">Créer un article</string>
 </resources>
