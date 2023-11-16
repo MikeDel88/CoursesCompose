@@ -24,6 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -59,12 +63,14 @@ fun ScreenCourseDetail(
     onUpdateItem: (course: Courses) -> Unit,
     onAddArticleItem: (article: Articles) -> Unit,
     onDeleteArticleItem: (article: Articles) -> Unit,
-    onChangeQuantiteArticleItem: (article: Articles) -> Unit
+    onChangeQuantiteArticleItem: (article: Articles) -> Unit,
+    onRefreshList: (id: Long) -> Unit
 ) {
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
 
     if(uiCourseDetailState.loading ) {
@@ -73,6 +79,9 @@ fun ScreenCourseDetail(
         Text(text= stringResource(R.string.load_data_not_found))
     } else {
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
             floatingActionButton = {
                 ExtendedFloatingActionButton(
                     onClick = {
@@ -99,7 +108,20 @@ fun ScreenCourseDetail(
                     ArticleList(
                         state = uiCourseDetailState,
                         onQuantiteChange = onChangeQuantiteArticleItem,
-                        onDeleteArticle = onDeleteArticleItem,
+                        onDeleteArticle = { article ->
+                            scope.launch {
+                                val result = snackbarHostState
+                                    .showSnackbar(
+                                        message = "Article ${article.name} effacé",
+                                        actionLabel = "Annuler",
+                                        duration = SnackbarDuration.Long
+                                    )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> { onRefreshList(uiCourseDetailState.data.courses!!.id) }
+                                    SnackbarResult.Dismissed -> { onDeleteArticleItem(article) }
+                                }
+                            }
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp)
@@ -114,7 +136,8 @@ fun ScreenCourseDetail(
                         sheetState = sheetState,
                     ) {
                         FormArticle(
-                            id = uiCourseDetailState.data.courses!!.id
+                            id = uiCourseDetailState.data.courses!!.id,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
                         ) { article ->
                             onAddArticleItem(article)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -176,7 +199,7 @@ fun ScreenCourseDetail() {
                         },
                         sheetState = sheetState,
                     ) {
-                        FormArticle(course.id) {
+                        FormArticle(course.id, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                             //onAddItem(course)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {

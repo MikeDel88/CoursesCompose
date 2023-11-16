@@ -11,6 +11,7 @@ import fr.course.compose.features.articles.database.CourseWithDetail
 import fr.course.compose.features.courses.database.Courses
 import fr.course.compose.features.courses.database.getDrawable
 import fr.course.compose.features.courses.repository.CourseRepositoryImpl
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,12 +30,21 @@ class CourseDetailViewModel @Inject constructor(
     val uiState: StateFlow<UiCourseDetailState> = _uiState.asStateFlow()
 
     init {
+       getCourseAndList(savedStateHandle.get<Long>("id") ?: 0)
+    }
+
+    private fun getCourseAndList(id: Long) {
         viewModelScope.launch {
-            courseRepository.getCourseByIdWithArticle(savedStateHandle.get<Long>("id") ?: 0).collect {
+            delay(500)
+            courseRepository.getCourseByIdWithArticle(id).collect {
                     course -> _uiState.value = UiCourseDetailState(data = course)
             }
         }
+    }
 
+    fun refreshList(id: Long) {
+        _uiState.value = UiCourseDetailState(data = null, loading = true)
+        getCourseAndList(id)
     }
 
     fun majCourse(courses: Courses) {
