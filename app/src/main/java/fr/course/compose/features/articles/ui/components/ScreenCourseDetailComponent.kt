@@ -76,7 +76,7 @@ fun ScreenCourseDetail(
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     var expanded by remember { mutableStateOf(true) }
 
@@ -141,6 +141,7 @@ fun ScreenCourseDetail(
                 }
                 if (showBottomSheet) {
                     ModalBottomSheet(
+                        modifier = Modifier.fillMaxWidth(),
                         onDismissRequest = {
                             showBottomSheet = false
                         },
