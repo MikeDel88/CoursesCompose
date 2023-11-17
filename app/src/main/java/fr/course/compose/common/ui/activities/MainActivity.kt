@@ -93,7 +93,6 @@ fun MyApp() {
                     onAddArticleItem = { article -> courseDetailViewModel.addArticle(article) },
                     onDeleteArticleItem = { article -> courseDetailViewModel.deleteArticle(article) },
                     onChangeQuantiteArticleItem = { article -> courseDetailViewModel.updateArticle(article) },
-                    onRefreshList = { id -> courseDetailViewModel.refreshList(id) }
                 )
         }
     }

@@ -1,8 +1,10 @@
 package fr.course.compose.features.articles.ui.components
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +29,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -36,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,18 +59,20 @@ import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.features.articles.ui.UiCourseDetailState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @Composable
 fun ArticleList(
     state: UiCourseDetailState,
+    snackbarHostState: SnackbarHostState,
     onScrollDetected: (state: LazyListState) -> Unit,
     onQuantiteChange: (item: Articles) -> Unit,
     onDeleteArticle: (item: Articles) -> Unit,
     modifier: Modifier
 ) {
     val scroll = rememberLazyListState()
-
+    Log.d("Article", "List compose")
     if(state.loading)
     {
         Loading("", modifier)
@@ -82,6 +90,7 @@ fun ArticleList(
                 }
             ) { article -> ArticleItem(
                 article = article,
+                snackbarHostState = snackbarHostState,
                 onQuantiteChange = onQuantiteChange,
                 onRemove = onDeleteArticle)
             }
@@ -111,7 +120,7 @@ fun ArticleList() {
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             items(list) { article ->
-                ArticleItem(article, {}, {})
+                ArticleItem(article, SnackbarHostState(), {}, {})
             }
         }
     }
@@ -121,20 +130,25 @@ fun ArticleList() {
 @Composable
 fun ArticleItem(
     article: Articles,
+    snackbarHostState: SnackbarHostState,
     onQuantiteChange: (item: Articles) -> Unit,
     onRemove: (item: Articles) -> Unit,
 ) {
     var show by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
     val dismissState = rememberDismissState(
         confirmValueChange = {
             if (it == DismissValue.DismissedToStart) {
                 show = false
                 true
-            } else false
+            } else {
+                show = true
+                true
+            }
         }, positionalThreshold = { 150.dp.toPx() }
     )
     AnimatedVisibility(
-        show,exit = fadeOut(spring())
+        show,exit = fadeOut(spring()), enter = fadeIn(spring())
     ) {
         SwipeToDismiss(
             state = dismissState,
@@ -151,7 +165,18 @@ fun ArticleItem(
 
     LaunchedEffect(show) {
         if (!show) {
-            onRemove(article)
+            scope.launch {
+                val result = snackbarHostState
+                    .showSnackbar(
+                        message = "Article ${article.name} effacé",
+                        actionLabel = "Annuler",
+                        duration = SnackbarDuration.Short
+                    )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> { show = true; dismissState.reset() }
+                    SnackbarResult.Dismissed -> { onRemove(article) }
+                }
+            }
         }
     }
 

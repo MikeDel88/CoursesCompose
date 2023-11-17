@@ -19,6 +19,9 @@ import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -27,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,12 +52,14 @@ import fr.course.compose.features.courses.database.formatCourse
 import fr.course.compose.features.courses.datasource.CourseLocaleDataSource.Companion.getListForTest
 import fr.course.compose.features.courses.ui.UiCourseState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Date
 
 
 @Composable
 fun CourseList(
     state: UiCourseState,
+    snackbarHostState: SnackbarHostState,
     onClickItem: (item: Courses) -> Unit,
     onRemove: (item: Courses) -> Unit,
     modifier: Modifier
@@ -75,6 +81,7 @@ fun CourseList(
             ) { course -> CourseItem(
                     courseModel = course,
                     onClickItem = onClickItem,
+                    snackbarHostState = snackbarHostState,
                     onRemove = onRemove
                 )
             }
@@ -99,7 +106,7 @@ fun CourseList() {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(getListForTest()) { course ->
-                CourseItem(course, {}, { true })
+                CourseItem(course, SnackbarHostState(), {}, { true })
             }
         }
     }
@@ -109,11 +116,12 @@ fun CourseList() {
 @Composable
 fun CourseItem(
     courseModel: Courses,
+    snackbarHostState: SnackbarHostState,
     onClickItem: (item: Courses) -> Unit,
     onRemove: (item: Courses) -> Unit,
 ) {
     var show by remember { mutableStateOf(true) }
-
+    val scope = rememberCoroutineScope()
     val dismissState = rememberDismissState(
         confirmValueChange = {
             if (it == DismissValue.DismissedToStart) {
@@ -140,7 +148,18 @@ fun CourseItem(
 
     LaunchedEffect(show) {
         if (!show) {
-            onRemove(courseModel)
+            scope.launch {
+                val result = snackbarHostState
+                    .showSnackbar(
+                        message = "Course ${courseModel.name} effacé",
+                        actionLabel = "Annuler",
+                        duration = SnackbarDuration.Short
+                    )
+                when (result) {
+                    SnackbarResult.ActionPerformed -> { show = true; dismissState.reset() }
+                    SnackbarResult.Dismissed -> { onRemove(courseModel) }
+                }
+            }
         }
     }
 

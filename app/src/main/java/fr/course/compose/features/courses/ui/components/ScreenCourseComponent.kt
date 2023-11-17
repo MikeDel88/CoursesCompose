@@ -120,20 +120,8 @@ fun ScreenCourse(
                 CourseList(
                     state = uiCourseState,
                     onClickItem = onClickItem,
-                    onRemove = { course ->
-                        scope.launch {
-                            val result = snackbarHostState
-                                .showSnackbar(
-                                    message = "Course ${course.name} effacé",
-                                    actionLabel = "Annuler",
-                                    duration = SnackbarDuration.Short
-                                )
-                            when (result) {
-                                SnackbarResult.ActionPerformed -> { onRefreshList() }
-                                SnackbarResult.Dismissed -> { onRemoveItem(course) }
-                            }
-                        }
-                   },
+                    snackbarHostState = snackbarHostState,
+                    onRemove = onRemoveItem,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -226,7 +214,7 @@ fun ScreenCourse() {
                 ) {
 
                     CourseList(
-                        UiCourseState(data = CourseLocaleDataSource.getListForTest()), {}, {},
+                        UiCourseState(data = CourseLocaleDataSource.getListForTest()), SnackbarHostState(), {}, {},
                         Modifier
                             .weight(1f)
                             .fillMaxWidth()

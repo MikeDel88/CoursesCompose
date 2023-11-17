@@ -1,6 +1,7 @@
 package fr.course.compose.features.articles.ui.components
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -69,8 +70,9 @@ fun ScreenCourseDetail(
     onAddArticleItem: (article: Articles) -> Unit,
     onDeleteArticleItem: (article: Articles) -> Unit,
     onChangeQuantiteArticleItem: (article: Articles) -> Unit,
-    onRefreshList: (id: Long) -> Unit
 ) {
+
+    Log.d("Article", "Screen compose")
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -129,20 +131,8 @@ fun ScreenCourseDetail(
                             expanded = state.firstVisibleItemIndex <= 0
                         },
                         onQuantiteChange = onChangeQuantiteArticleItem,
-                        onDeleteArticle = { article ->
-                            scope.launch {
-                                val result = snackbarHostState
-                                    .showSnackbar(
-                                        message = "Article ${article.name} effacé",
-                                        actionLabel = "Annuler",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> { onRefreshList(uiCourseDetailState.data.courses!!.id) }
-                                    SnackbarResult.Dismissed -> { onDeleteArticleItem(article) }
-                                }
-                            }
-                        },
+                        snackbarHostState = snackbarHostState,
+                        onDeleteArticle = onDeleteArticleItem,
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp)
