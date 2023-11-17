@@ -162,7 +162,8 @@ fun FormArticle() {
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
         .fillMaxWidth()
-        .padding(16.dp)) {
+        .padding(16.dp)
+    ) {
         BasicTextField(
             value = text,
             modifier = Modifier.weight(1f),
@@ -199,7 +200,6 @@ fun FormArticle() {
                     }
                 }
             },
-
         )
         Spacer(modifier = Modifier.size(8.dp))
         IconButton(onClick = {},enabled = text.isNotEmpty()) {

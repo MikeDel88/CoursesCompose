@@ -80,7 +80,7 @@ fun ArticleList(
         LazyColumn(
             state = scroll,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp),
             modifier = modifier
         ) {
             items(
@@ -117,7 +117,7 @@ fun ArticleList() {
         LazyColumn(
             modifier = Modifier.padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp),
         ) {
             items(list) { article ->
                 ArticleItem(article, SnackbarHostState(), {}, {})

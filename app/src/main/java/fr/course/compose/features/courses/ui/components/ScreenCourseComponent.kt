@@ -132,7 +132,7 @@ fun ScreenCourse(
                         },
                         sheetState = sheetState,
                     ) {
-                        FormCourse(Courses(name=""), modifier = Modifier.padding(16.dp)) { course ->
+                        FormCourse(Courses(name=""), modifier = Modifier.fillMaxWidth().padding(16.dp)) { course ->
                             onAddItem(course)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {

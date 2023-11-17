@@ -69,7 +69,7 @@ fun CourseList(
         Loading("", modifier)
     } else {
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = modifier
         ) {
@@ -102,7 +102,7 @@ fun CourseList() {
         Loading("", Modifier)
     } else {
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(getListForTest()) { course ->
