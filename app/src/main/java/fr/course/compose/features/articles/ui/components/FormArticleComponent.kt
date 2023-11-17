@@ -45,6 +45,7 @@ import fr.course.compose.R
 fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articles) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
     var quantite by rememberSaveable { mutableIntStateOf(1) }
+    var quantiteDialog by rememberSaveable { mutableIntStateOf(1) }
     var openAlertDialog by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
@@ -61,19 +62,14 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
             ),
             decorationBox = { innerTextField ->
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.inversePrimary,
                             shape = RoundedCornerShape(size = 16.dp)
                         )
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(size = 16.dp)
-                        )
                         .weight(1f)
-                        .padding(all = 16.dp), // inner padding
-                    verticalAlignment = Alignment.CenterVertically,
+                        .padding(all = 8.dp), // inner padding
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     innerTextField()
@@ -113,22 +109,22 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         IconButton(
                             modifier = Modifier.size(32.dp),
-                            enabled = quantite > 1,
-                            onClick = { quantite-- },
+                            enabled = quantiteDialog > 1,
+                            onClick = { quantiteDialog-- },
                             colors =  IconButtonDefaults.filledIconButtonColors()
                         ) {
                             Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null)
                         }
                         Spacer(modifier = Modifier.size(16.dp))
                         Text(
-                            text = quantite.toString(),
+                            text = quantiteDialog.toString(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.size(16.dp))
                         IconButton(
                             modifier = Modifier.size(32.dp),
-                            onClick = { quantite++ },
+                            onClick = { quantiteDialog++ },
                             colors =  IconButtonDefaults.filledIconButtonColors()
                         ) {
                             Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
@@ -138,14 +134,14 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false }
+                        onClick = { openAlertDialog = false; quantite = quantiteDialog }
                     ) {
                         Text(stringResource(id = R.string.bt_ok).uppercase())
                     }
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false; quantite = 1 }
+                        onClick = { openAlertDialog = false; quantiteDialog = quantite}
                     ) {
                         Text(stringResource(R.string.bt_annuler).uppercase())
                     }
@@ -160,6 +156,7 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
 fun FormArticle() {
     var text by rememberSaveable { mutableStateOf("test") }
     var quantite by rememberSaveable { mutableIntStateOf(1) }
+    var quantiteDialog by rememberSaveable { mutableIntStateOf(1) }
     var openAlertDialog by remember { mutableStateOf(false) }
 
 
@@ -184,13 +181,8 @@ fun FormArticle() {
                             color = MaterialTheme.colorScheme.inversePrimary,
                             shape = RoundedCornerShape(size = 16.dp)
                         )
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(size = 16.dp)
-                        )
                         .weight(1f)
-                        .padding(all = 16.dp), // inner padding
+                        .padding(all = 8.dp), // inner padding
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -225,22 +217,22 @@ fun FormArticle() {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         IconButton(
                             modifier = Modifier.size(32.dp),
-                            enabled = quantite > 1,
-                            onClick = { quantite-- },
+                            enabled = quantiteDialog > 1,
+                            onClick = { quantiteDialog-- },
                             colors =  IconButtonDefaults.filledIconButtonColors()
                         ) {
                             Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null)
                         }
                         Spacer(modifier = Modifier.size(16.dp))
                         Text(
-                            text = quantite.toString(),
+                            text = quantiteDialog.toString(),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(modifier = Modifier.size(16.dp))
                         IconButton(
                             modifier = Modifier.size(32.dp),
-                            onClick = { quantite++ },
+                            onClick = { quantiteDialog++ },
                             colors =  IconButtonDefaults.filledIconButtonColors()
                         ) {
                             Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
@@ -250,14 +242,14 @@ fun FormArticle() {
                 onDismissRequest = { openAlertDialog = false },
                 confirmButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false }
+                        onClick = { openAlertDialog = false; quantite = quantiteDialog }
                     ) {
                         Text(stringResource(id = R.string.bt_ok).uppercase())
                     }
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { openAlertDialog = false;  }
+                        onClick = { openAlertDialog = false; }
                     ) {
                         Text(stringResource(R.string.bt_annuler).uppercase())
                     }
