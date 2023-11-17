@@ -31,10 +31,18 @@ data class Articles(
 )
 
 class CourseWithDetail {
-
     @Embedded
     var courses: Courses? = null
 
     @Relation(entity = Articles::class,parentColumn = "id",entityColumn = "courseId")
     var articles: List<Articles>? = null
+}
+
+enum class ArticlesFilter(val label: String) {
+    DONE("Fait"),
+    TODO("A faire"),
+    NAME_ASC("Nom croissant"),
+    NAME_DESC("Nom décroissant"),
+    QUANTITY_ASC("Quantité croissant"),
+    QUANTITY_DESC("Quantité décroissant")
 }

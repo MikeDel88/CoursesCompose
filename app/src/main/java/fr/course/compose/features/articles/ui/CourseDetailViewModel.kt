@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.course.compose.features.articles.repository.ArticleRepositoryImpl
 import fr.course.compose.features.articles.database.Articles
+import fr.course.compose.features.articles.database.ArticlesFilter
 import fr.course.compose.features.articles.database.CourseWithDetail
 import fr.course.compose.features.courses.database.Courses
 import fr.course.compose.features.courses.database.getDrawable
@@ -87,5 +88,20 @@ class CourseDetailViewModel @Inject constructor(
             val rowsAffected = articleRepositoryImpl.updateArticle(articles)
             Log.d("CourseDetailViewModel", "Update Article : $rowsAffected")
         }
+    }
+
+    fun filterListe(filter: ArticlesFilter) {
+        val liste = _uiState.value.data?.articles!!
+        val listeFiltered = when(filter) {
+            ArticlesFilter.DONE -> liste
+            ArticlesFilter.TODO -> liste
+            ArticlesFilter.NAME_ASC -> liste.sortedBy { it.name }
+            ArticlesFilter.NAME_DESC -> liste.sortedByDescending { it.name }
+            ArticlesFilter.QUANTITY_ASC -> liste.sortedBy { it.quantite }
+            ArticlesFilter.QUANTITY_DESC -> liste.sortedByDescending { it.quantite }
+        }
+        _uiState.value.data!!.articles = listeFiltered
+
+        _uiState.value = UiCourseDetailState(data = _uiState.value.data)
     }
 }

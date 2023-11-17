@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -29,10 +31,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +56,7 @@ import fr.course.compose.R
 import fr.course.compose.common.ui.components.Loading
 import fr.course.compose.common.ui.components.SimpleDatePickerInDatePickerDialog
 import fr.course.compose.features.articles.database.Articles
+import fr.course.compose.features.articles.database.ArticlesFilter
 import fr.course.compose.features.articles.datasource.ArticleLocalDataSource
 import fr.course.compose.features.articles.ui.UiCourseDetailState
 import fr.course.compose.features.courses.database.Courses
@@ -62,7 +65,7 @@ import fr.course.compose.features.courses.database.formatCourse
 import kotlinx.coroutines.launch
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalStdlibApi::class)
 @Composable
 fun ScreenCourseDetail(
     uiCourseDetailState: UiCourseDetailState,
@@ -70,6 +73,7 @@ fun ScreenCourseDetail(
     onAddArticleItem: (article: Articles) -> Unit,
     onDeleteArticleItem: (article: Articles) -> Unit,
     onChangeQuantiteArticleItem: (article: Articles) -> Unit,
+    onFilterChange: (filter: ArticlesFilter) -> Unit
 ) {
 
     Log.d("Article", "Screen compose")
@@ -79,6 +83,7 @@ fun ScreenCourseDetail(
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     var expanded by remember { mutableStateOf(true) }
+    var openAlertDialog by remember { mutableStateOf(false) }
 
 
     // Animation with Header when user scroll List Article.
@@ -99,13 +104,22 @@ fun ScreenCourseDetail(
                 SnackbarHost(hostState = snackbarHostState)
             },
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        showBottomSheet = true
-                    },
-                    icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
-                    text = { Text(text = stringResource(R.string.bt_create_article)) },
-                )
+                Column(horizontalAlignment = Alignment.End) {
+                    if(uiCourseDetailState.data.articles!!.size > 1) {
+                        SmallFloatingActionButton(
+                            onClick = { openAlertDialog = true }
+                        ) {
+                            Icon(painter = painterResource(R.drawable.icon_filter_list), contentDescription = "order")
+                        }
+                    }
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            showBottomSheet = true
+                        },
+                        icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
+                        text = { Text(text = stringResource(R.string.bt_create_article)) },
+                    )
+                }
             },
         ) { innerPadding ->
             Column(modifier = Modifier
@@ -149,7 +163,9 @@ fun ScreenCourseDetail(
                     ) {
                         FormArticle(
                             id = uiCourseDetailState.data.courses!!.id,
-                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
                         ) { article ->
                             onAddArticleItem(article)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -161,9 +177,38 @@ fun ScreenCourseDetail(
                     }
                 }
             }
+
+            if(openAlertDialog) {
+                AlertDialog(
+                    icon = {
+                        Icon(painterResource(id = R.drawable.icon_filter_list), contentDescription = "Filter Icon")
+                    },
+                    title = {
+                        Text(text = "Filtre")
+                    },
+                    text = {
+                        Column {
+                            val filters = ArticlesFilter.values()
+                            filters.forEach {
+                                Log.d("Articles", "Filter ${it.name} (${it.ordinal}) : ${it.label}")
+                                Text(text=it.label, modifier= Modifier
+                                    .selectable(
+                                    selected = false,
+                                    onClick= { openAlertDialog = false; onFilterChange(it) }
+                                    )
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                )
+                            }
+                        }
+                    },
+                    onDismissRequest = { openAlertDialog = false },
+                    confirmButton = {},
+                    dismissButton = {}
+                )
+            }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,6 +229,7 @@ fun ScreenCourseDetail() {
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val expanded by remember { mutableStateOf(true) }
+    var openAlertDialog by remember { mutableStateOf(false) }
 
     if(loading) {
         Loading(stringResource(R.string.load_generic), modifier = Modifier)
@@ -193,19 +239,26 @@ fun ScreenCourseDetail() {
 
         Scaffold(
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        //showBottomSheet = true
-                    },
-                    icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
-                    text = { Text(text = stringResource(R.string.bt_create_article)) },
-                )
+                Column(horizontalAlignment = Alignment.End) {
+                    if(data.size > 1) {
+                        SmallFloatingActionButton(onClick = { /*TODO*/ }) {
+                            Icon(painter = painterResource(R.drawable.icon_filter_list), contentDescription = "order")
+                        }
+                    }
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            showBottomSheet = true
+                        },
+                        icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
+                        text = { Text(text = stringResource(R.string.bt_create_article)) },
+                    )
+                }
             },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Header(course, Modifier
                     .animateContentSize()
-                    .height(if(expanded) 150.dp else 80.dp)
+                    .height(if (expanded) 150.dp else 80.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.inversePrimary)) {}
                 ArticleList()
@@ -216,7 +269,9 @@ fun ScreenCourseDetail() {
                         },
                         sheetState = sheetState,
                     ) {
-                        FormArticle(course.id, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        FormArticle(course.id, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)) {
                             //onAddItem(course)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {

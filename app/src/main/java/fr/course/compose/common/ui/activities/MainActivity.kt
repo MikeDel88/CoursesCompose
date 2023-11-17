@@ -93,6 +93,7 @@ fun MyApp() {
                     onAddArticleItem = { article -> courseDetailViewModel.addArticle(article) },
                     onDeleteArticleItem = { article -> courseDetailViewModel.deleteArticle(article) },
                     onChangeQuantiteArticleItem = { article -> courseDetailViewModel.updateArticle(article) },
+                    onFilterChange = { filter -> courseDetailViewModel.filterListe(filter) }
                 )
         }
     }
