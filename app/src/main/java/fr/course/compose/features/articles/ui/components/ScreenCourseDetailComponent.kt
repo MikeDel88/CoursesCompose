@@ -190,11 +190,13 @@ fun ScreenCourseDetail(
                         Column {
                             val filters = ArticlesFilter.values()
                             filters.forEach {
-                                Log.d("Articles", "Filter ${it.name} (${it.ordinal}) : ${it.label}")
                                 Text(text=it.label, modifier= Modifier
                                     .selectable(
-                                    selected = false,
-                                    onClick= { openAlertDialog = false; onFilterChange(it) }
+                                        selected = false,
+                                        onClick= {
+                                            openAlertDialog = false
+                                            onFilterChange(it)
+                                        }
                                     )
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)

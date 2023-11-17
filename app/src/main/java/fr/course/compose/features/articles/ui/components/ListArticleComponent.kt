@@ -80,7 +80,7 @@ fun ArticleList(
         LazyColumn(
             state = scroll,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = if(state.data!!.articles!!.size > 1) 120.dp else 80.dp),
             modifier = modifier
         ) {
             items(
