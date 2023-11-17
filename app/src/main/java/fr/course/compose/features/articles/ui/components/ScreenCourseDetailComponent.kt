@@ -1,6 +1,10 @@
 package fr.course.compose.features.articles.ui.components
 
 import android.os.Build
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -43,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import fr.course.compose.R
 import fr.course.compose.common.ui.components.Loading
@@ -71,7 +76,16 @@ fun ScreenCourseDetail(
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    var expanded by remember { mutableStateOf(true) }
 
+
+    // Animation with Header when user scroll List Article.
+    val transition = updateTransition(targetState = expanded, label = "transition")
+    val animatedSizeDp: Dp by transition.animateDp(transitionSpec = {
+        tween(500)
+    }, "") { isExpanded ->
+        if (isExpanded) 200.dp else 100.dp
+    }
 
     if(uiCourseDetailState.loading ) {
         Loading(stringResource(R.string.load_generic), modifier = Modifier)
@@ -98,6 +112,10 @@ fun ScreenCourseDetail(
             ) {
                 Header(
                     courses = uiCourseDetailState.data.courses!!,
+                    modifier = Modifier
+                        .height(animatedSizeDp)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.inversePrimary),
                     onUpdateItem = onUpdateItem
                 )
                 if(uiCourseDetailState.data.articles.isNullOrEmpty()) {
@@ -107,6 +125,9 @@ fun ScreenCourseDetail(
                 } else {
                     ArticleList(
                         state = uiCourseDetailState,
+                        onScrollDetected = { state ->
+                            expanded = state.firstVisibleItemIndex <= 0
+                        },
                         onQuantiteChange = onChangeQuantiteArticleItem,
                         onDeleteArticle = { article ->
                             scope.launch {
@@ -171,6 +192,7 @@ fun ScreenCourseDetail() {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val expanded by remember { mutableStateOf(true) }
 
     if(loading) {
         Loading(stringResource(R.string.load_generic), modifier = Modifier)
@@ -190,7 +212,11 @@ fun ScreenCourseDetail() {
             },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                Header(course) {}
+                Header(course, Modifier
+                    .animateContentSize()
+                    .height(if(expanded) 150.dp else 80.dp)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.inversePrimary)) {}
                 ArticleList()
                 if (showBottomSheet) {
                     ModalBottomSheet(
@@ -216,7 +242,7 @@ fun ScreenCourseDetail() {
 
 }
 @Composable
-fun Header(courses: Courses, onUpdateItem: (course: Courses) -> Unit) {
+fun Header(courses: Courses, modifier : Modifier, onUpdateItem: (course: Courses) -> Unit) {
 
     var isNameEditing by rememberSaveable { mutableStateOf(false) }
     var isDateEditing by rememberSaveable { mutableStateOf(false) }
@@ -226,11 +252,7 @@ fun Header(courses: Courses, onUpdateItem: (course: Courses) -> Unit) {
 
     Box(
         propagateMinConstraints = false,
-        modifier = Modifier
-            .heightIn(min = 100.dp)
-            .fillMaxHeight(0.2f)
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.inversePrimary),
+        modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
         Column {

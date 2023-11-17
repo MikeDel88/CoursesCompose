@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -23,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
@@ -54,15 +58,20 @@ import java.util.Locale
 @Composable
 fun ArticleList(
     state: UiCourseDetailState,
+    onScrollDetected: (state: LazyListState) -> Unit,
     onQuantiteChange: (item: Articles) -> Unit,
     onDeleteArticle: (item: Articles) -> Unit,
     modifier: Modifier
 ) {
+    val scroll = rememberLazyListState()
+
     if(state.loading)
     {
         Loading("", modifier)
     } else {
         LazyColumn(
+            state = scroll,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
             modifier = modifier
         ) {
@@ -77,8 +86,9 @@ fun ArticleList(
                 onRemove = onDeleteArticle)
             }
         }
-    }
 
+        onScrollDetected(scroll)
+    }
 }
 
 @Preview
@@ -97,6 +107,7 @@ fun ArticleList() {
     } else {
         LazyColumn(
             modifier = Modifier.padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             items(list) { article ->
@@ -190,18 +201,21 @@ fun ArticleItem() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Unit) {
+    //TODO: Voir pour mettre une propriete isDone et la stocker en base.
+    // TODO: Voir comment on pourrait modifier l'article.
     var isFinished by rememberSaveable { mutableStateOf(false) }
     Card(onClick = { isFinished = !isFinished }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(40.dp)
-                .padding(horizontal = 8.dp)
+                .height(50.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxWidth(1f)
         ) {
             Text(
                 text = article.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                 textAlign = TextAlign.Start,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                 textDecoration = if(isFinished) TextDecoration.LineThrough else TextDecoration.None,
                 maxLines = 2,
                 modifier = Modifier
@@ -209,7 +223,7 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
                     .padding(end = 8.dp)
             )
             IconButton(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(18.dp),
                 enabled = article.quantite > 1,
                 onClick = {
                     article.quantite--
@@ -222,11 +236,12 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
             Spacer(modifier = Modifier.size(8.dp))
             Text(
                 text = article.quantite.toString(),
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.size(8.dp))
             IconButton(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(18.dp),
                 onClick = { article.quantite++; onQuantiteChange(article) },
                 colors =  IconButtonDefaults.filledIconButtonColors()
             ) {
@@ -247,13 +262,14 @@ fun ArticleItemCard() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(40.dp)
-                .padding(horizontal = 8.dp)
+                .height(50.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxWidth(1f)
         ) {
             Text(
                 text = "Patate",
                 textAlign = TextAlign.Start,
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                 textDecoration = if(isFinished) TextDecoration.LineThrough else TextDecoration.None,
                 maxLines = 2,
                 modifier = Modifier
@@ -261,7 +277,7 @@ fun ArticleItemCard() {
                     .padding(end = 8.dp)
             )
             IconButton(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(18.dp),
                 enabled = quantite > 1,
                 onClick = { quantite-- },
                 colors =  IconButtonDefaults.filledIconButtonColors()
@@ -271,11 +287,12 @@ fun ArticleItemCard() {
             Spacer(modifier = Modifier.size(8.dp))
             Text(
                 text = quantite.toString(),
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.size(8.dp))
             IconButton(
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(18.dp),
                 onClick = { quantite++ },
                 colors =  IconButtonDefaults.filledIconButtonColors()
             ) {
