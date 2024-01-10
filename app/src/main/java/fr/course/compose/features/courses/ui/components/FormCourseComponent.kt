@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,29 +91,39 @@ fun FormCourse(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     innerTextField()
-                    IconButton(onClick = { openDatePicker = true }, modifier = Modifier.padding(0.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Date",
-                            tint = Color.DarkGray
-                        )
+                    Row {
+                        IconButton(
+                            onClick = { openDatePicker = true },
+                            modifier = Modifier.padding(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "Date",
+                                tint = Color.DarkGray
+                            )
+                        }
+                        Button(
+                            enabled = text.isNotEmpty(),
+                            onClick = {
+                                onClickValidate(
+                                    courses.copy(
+                                        name = text,
+                                        date = dateSelected,
+                                        icon = getDrawable(text)
+                                    )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Done,
+                                contentDescription = stringResource(id = R.string.bt_valider)
+                            )
+                        }
                     }
                 }
             },
         )
-        Spacer(Modifier.size(8.dp))
-        IconButton(
-            enabled = text.isNotEmpty(),
-            onClick = {
-                onClickValidate(courses.copy(
-                    name = text,
-                    date = dateSelected,
-                    icon = getDrawable(text)
-                ))
-            }
-        ) {
-            Icon(Icons.Default.Done, contentDescription = stringResource(id = R.string.bt_valider))
-        }
+
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && openDatePicker)
             SimpleDatePickerInDatePickerDialog(true, { openDatePicker = false }) {
