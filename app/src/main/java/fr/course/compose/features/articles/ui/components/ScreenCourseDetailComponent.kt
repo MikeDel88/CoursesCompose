@@ -166,7 +166,7 @@ fun ScreenCourseDetail(
                             id = uiCourseDetailState.data.first!!.id,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(bottom = 48.dp, start = 16.dp, end = 16.dp)
                         ) { article ->
                             onAddArticleItem(article)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
