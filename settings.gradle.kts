@@ -1,3 +1,5 @@
+import java.net.URI
+
 pluginManagement {
     repositories {
         google()
@@ -10,8 +12,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = URI("https://androidx.dev/storage/compose-compiler/repository/")
+        }
     }
 }
+
 
 rootProject.name = "CoursesCompose"
 include(":app")

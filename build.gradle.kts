@@ -4,8 +4,8 @@ ext {
     extra["hilt_version"] = "1.1.0"
     extra["dagger_version"] = "2.48.1"
     extra["room_version"] = "2.6.1"
-    extra["compose_navigation_version"] = "2.7.5"
-    extra["compose_activity_version"] = "1.8.1"
+    extra["compose_navigation_version"] = "2.7.6"
+    extra["compose_activity_version"] = "1.8.2"
     extra["compose_boom_version"] = "2023.06.00"
     extra["compose_animation_version"] = "1.5.4"
     extra["lifecycle_version"] = "2.6.2"
@@ -22,9 +22,11 @@ ext {
     extra["version_name"] = "1.0"
 }
 plugins {
-    id("com.android.application") version "8.1.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
+    id("com.android.application") version "8.2.1" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
     // Ajout
-    id("com.google.dagger.hilt.android") version "2.44" apply false
-    kotlin("plugin.serialization") version "1.8.10"
+    id("com.google.devtools.ksp") version "1.9.22-1.0.16" apply false
+    id("com.google.dagger.hilt.android") version "2.48.1" apply false
+    kotlin("plugin.serialization") version "1.9.22"
+
 }
