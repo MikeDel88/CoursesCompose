@@ -179,6 +179,17 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
     //TODO: Voir pour mettre une propriete isDone et la stocker en base.
     // TODO: Voir comment on pourrait modifier l'article.
     var isFinished by rememberSaveable { mutableStateOf(false) }
+    var isQuantityChange by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = isQuantityChange) {
+        if(isQuantityChange) {
+            onQuantiteChange(article)
+            isQuantityChange = false
+        }
+    }
+
     Card(onClick = { isFinished = !isFinished }) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -202,7 +213,7 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
                 enabled = article.quantite > 1,
                 onClick = {
                     article.quantite--
-                    onQuantiteChange(article)
+                    isQuantityChange = true
                  },
                 colors =  IconButtonDefaults.filledIconButtonColors()
             ) {
@@ -217,7 +228,10 @@ fun ArticleItemCard(article: Articles, onQuantiteChange: (item: Articles) -> Uni
             Spacer(modifier = Modifier.size(8.dp))
             IconButton(
                 modifier = Modifier.size(18.dp),
-                onClick = { article.quantite++; onQuantiteChange(article) },
+                onClick = {
+                    article.quantite++
+                    isQuantityChange = true
+              },
                 colors =  IconButtonDefaults.filledIconButtonColors()
             ) {
                 Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
