@@ -40,9 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.R
+import fr.course.compose.common.ui.theme.CoursesComposeTheme
 
 @Composable
-fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articles) -> Unit) {
+fun FormArticle(id: Long, modifier: Modifier = Modifier, onClickValidate: (articles: Articles) -> Unit = {}) {
     var text by rememberSaveable { mutableStateOf("") }
     var quantite by rememberSaveable { mutableIntStateOf(1) }
     var quantiteDialog by rememberSaveable { mutableIntStateOf(1) }
@@ -153,108 +154,8 @@ fun FormArticle(id: Long, modifier: Modifier, onClickValidate: (articles: Articl
 
 @Preview
 @Composable
-fun FormArticle() {
-    var text by rememberSaveable { mutableStateOf("test") }
-    var quantite by rememberSaveable { mutableIntStateOf(1) }
-    var quantiteDialog by rememberSaveable { mutableIntStateOf(1) }
-    var openAlertDialog by remember { mutableStateOf(false) }
-
-
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)
-    ) {
-        BasicTextField(
-            value = text,
-            modifier = Modifier.weight(1f),
-            onValueChange = { newText ->
-                text = newText
-            },
-            textStyle = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.DarkGray
-            ),
-            decorationBox = { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.inversePrimary,
-                            shape = RoundedCornerShape(size = 16.dp)
-                        )
-                        .weight(1f)
-                        .padding(all = 8.dp), // inner padding
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    innerTextField()
-                    IconButton(onClick = { openAlertDialog = true }, modifier = Modifier.padding(0.dp)) {
-                        Row {
-                            Text(text=quantite.toString(), color = Color.DarkGray, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 4.dp))
-                            Icon(
-                                imageVector = Icons.Default.ShoppingCart,
-                                contentDescription = "Quantity",
-                                tint = Color.DarkGray
-                            )
-                        }
-                    }
-                }
-            },
-        )
-        Spacer(modifier = Modifier.size(8.dp))
-        IconButton(onClick = {},enabled = text.isNotEmpty()) {
-            Icon(imageVector = Icons.Default.Done, contentDescription = "")
-        }
-        if(openAlertDialog) {
-            AlertDialog(
-                icon = {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = "Shopping Icon")
-                },
-                title = {
-                    Text(text = "Quantité")
-                },
-                text = {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                        IconButton(
-                            modifier = Modifier.size(32.dp),
-                            enabled = quantiteDialog > 1,
-                            onClick = { quantiteDialog-- },
-                            colors =  IconButtonDefaults.filledIconButtonColors()
-                        ) {
-                            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = null)
-                        }
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Text(
-                            text = quantiteDialog.toString(),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(modifier = Modifier.size(16.dp))
-                        IconButton(
-                            modifier = Modifier.size(32.dp),
-                            onClick = { quantiteDialog++ },
-                            colors =  IconButtonDefaults.filledIconButtonColors()
-                        ) {
-                            Icon(Icons.Default.KeyboardArrowRight, contentDescription = null)
-                        }
-                    }
-                },
-                onDismissRequest = { openAlertDialog = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = { openAlertDialog = false; quantite = quantiteDialog }
-                    ) {
-                        Text(stringResource(id = R.string.bt_ok).uppercase())
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { openAlertDialog = false; }
-                    ) {
-                        Text(stringResource(R.string.bt_annuler).uppercase())
-                    }
-                }
-            )
-        }
+fun FormArticlePreview() {
+    CoursesComposeTheme {
+        FormArticle(id = 1)
     }
 }

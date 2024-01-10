@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,7 +42,9 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
 
     fun refreshList() {
         Log.d("CourseViewModel", "refreshList()")
-        _uiState.value = UiCourseState(loading = true)
+        _uiState.update { state ->
+            state.copy(loading = true)
+        }
         getListe()
     }
 
@@ -79,7 +82,9 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
             List Filtered : $listOfCourseFiltered 
             List Not Filtered : $listOfCourse
         """.trimIndent())
-        _uiState.value = UiCourseState(data = listOfCourseFiltered.ifEmpty { listOfCourse })
+        _uiState.update { state ->
+            state.copy(data = if(search.isEmpty()) listOfCourse else listOfCourseFiltered, loading = false)
+        }
     }
 
 }

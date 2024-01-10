@@ -29,7 +29,6 @@ fun DismissBackground(dismissState: DismissState) {
     }
     Row(
         modifier = Modifier
-            .fillMaxSize()
             .background(color)
             .padding(12.dp, 8.dp),
         verticalAlignment = Alignment.CenterVertically,

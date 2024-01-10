@@ -1,8 +1,13 @@
 package fr.course.compose.features.courses.ui.components
 
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -21,6 +26,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,18 +36,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import fr.course.compose.R
+import fr.course.compose.common.ui.theme.CoursesComposeTheme
 import fr.course.compose.features.courses.database.Courses
-import fr.course.compose.features.courses.datasource.CourseLocaleDataSource
 import fr.course.compose.features.courses.ui.UiCourseState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenCourse(
+    modifier: Modifier = Modifier,
     uiCourseState: UiCourseState,
     findList: (text: String) -> Unit,
     onClickItem: (item: Courses) -> Unit,
@@ -55,8 +63,9 @@ fun ScreenCourse(
     val scope = rememberCoroutineScope()
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
-
+    
     Scaffold(
+        modifier = modifier,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
@@ -70,8 +79,20 @@ fun ScreenCourse(
                     Text(stringResource(id = R.string.app_name))
                 },
                 actions = {
-                    IconButton(onClick = onRefreshList) {
+                    val animateRotation = rememberInfiniteTransition(label = "")
+                    val animation by animateRotation.animateFloat(
+                        initialValue = 0f,
+                        targetValue = 360f,
+                        animationSpec = InfiniteRepeatableSpec(
+                            animation = tween(durationMillis = 1000, easing = EaseOut),
+                            repeatMode = RepeatMode.Restart
+                        ), label = ""
+                    )
+                    IconButton(onClick = {
+                        onRefreshList()
+                    }) {
                         Icon(
+                            modifier = Modifier.rotate(0f),
                             imageVector = Icons.Filled.Refresh,
                             contentDescription = "Refresh datas"
                         )
@@ -81,6 +102,7 @@ fun ScreenCourse(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
+                expanded = true,
                 onClick = {
                     showBottomSheet = true
                 },
@@ -88,7 +110,6 @@ fun ScreenCourse(
                 text = { Text(text = stringResource(R.string.bt_create_course)) },
             )
         },
-        modifier = Modifier
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -112,7 +133,7 @@ fun ScreenCourse(
                 trailingIcon = {},
                 active = true,
                 onActiveChange = {},
-                tonalElevation = 0.dp
+                tonalElevation = 0.dp,
             ) {
                 CourseList(
                     state = uiCourseState,
@@ -121,18 +142,18 @@ fun ScreenCourse(
                     onRemove = onRemoveItem,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 )
                 if (showBottomSheet) {
                     ModalBottomSheet(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier,
                         onDismissRequest = {
                             showBottomSheet = false
                         },
                         sheetState = sheetState,
                     ) {
-                        FormCourse(Courses(name=""), modifier = Modifier.fillMaxWidth().padding(16.dp)) { course ->
+                        FormCourse(Courses(name=""), modifier = Modifier
+                            .padding(16.dp)) { course ->
                             onAddItem(course)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
@@ -147,95 +168,18 @@ fun ScreenCourse(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(heightDp = 900)
+
+@Preview()
 @Composable
 fun ScreenCourse() {
-
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                 colors = TopAppBarDefaults.topAppBarColors(
-                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                     titleContentColor = MaterialTheme.colorScheme.primary,
-                 ),
-                 title = {
-                 Text(stringResource(id = R.string.app_name))
-                 },
-                 actions = {
-                     IconButton(onClick = { /* do something */ }) {
-                         Icon(
-                             imageVector = Icons.Filled.Refresh,
-                             contentDescription = "Refresh datas"
-                         )
-                     }
-                 }
-             )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    showBottomSheet = true
-                },
-                icon = { Icon(Icons.Filled.Add, "Extended floating action button.") },
-                text = { Text(text = stringResource(id = R.string.bt_create_course)) },
-            )
-        },
-        modifier = Modifier
-    ) { innerPadding ->
-            Column(modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxHeight())  {
-
-                SearchBar(
-                    query = "Intermarche",
-                    onQueryChange = { },
-                    onSearch = {},
-                    placeholder = {
-                        Text(text = "")
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            contentDescription = null
-                        )
-                    },
-                    trailingIcon = {},
-                    active = true,
-                    onActiveChange = {},
-                    tonalElevation = 0.dp
-                ) {
-
-                    CourseList(
-                        UiCourseState(data = CourseLocaleDataSource.getListForTest()), SnackbarHostState(), {}, {},
-                        Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-                    )
-                    if (showBottomSheet) {
-                        ModalBottomSheet(
-                            onDismissRequest = {
-                                showBottomSheet = false
-                            },
-                            sheetState = sheetState,
-                        ) {
-                            FormCourse(Courses(name = "Intermarche"), modifier = Modifier.padding(16.dp)) {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        showBottomSheet = false
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
+    CoursesComposeTheme {
+        ScreenCourse(
+            uiCourseState = UiCourseState(data = listOf(), loading = false),
+            findList = {},
+            onClickItem = {},
+            onRemoveItem = {},
+            onAddItem = {},
+            onRefreshList = {}
+        )
+    }
 }

@@ -19,8 +19,7 @@ import androidx.compose.ui.unit.dp
 import fr.course.compose.R
 
 @Composable
-fun Loading(text: String, modifier: Modifier) {
-    val loaderText by rememberSaveable { mutableStateOf(text) }
+fun Loading(text: String = "", modifier: Modifier = Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         CircularProgressIndicator(
             modifier = Modifier
@@ -29,24 +28,14 @@ fun Loading(text: String, modifier: Modifier) {
             color = MaterialTheme.colorScheme.surfaceVariant,
             trackColor = MaterialTheme.colorScheme.secondary,
         )
-        if(loaderText.isNotEmpty())
-            Text(text = loaderText)
+        if(text.isNotEmpty())
+            Text(text = text)
     }
 }
 @Preview
 @Composable
-fun Loading() {
-    val text = stringResource(R.string.load_generic)
-    val loaderText by rememberSaveable { mutableStateOf(text) }
-    Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            trackColor = MaterialTheme.colorScheme.secondary,
-        )
-        if(loaderText.isNotEmpty())
-            Text(text = loaderText)
+fun LoadingPreview() {
+    MaterialTheme {
+        Loading("Chargement en cours...")
     }
 }

@@ -5,10 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.course.compose.features.articles.repository.ArticleRepositoryImpl
 import fr.course.compose.features.articles.database.Articles
 import fr.course.compose.features.articles.database.ArticlesFilter
-import fr.course.compose.features.articles.database.CourseWithDetail
+import fr.course.compose.features.articles.repository.ArticleRepositoryImpl
 import fr.course.compose.features.courses.database.Courses
 import fr.course.compose.features.courses.database.getDrawable
 import fr.course.compose.features.courses.repository.CourseRepositoryImpl
@@ -16,10 +15,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class UiCourseDetailState(val data: CourseWithDetail?, var loading: Boolean = false)
+data class UiCourseDetailState(val data: Pair<Courses?, List<Articles>?>?, var loading: Boolean = false)
 @HiltViewModel
 class CourseDetailViewModel @Inject constructor(
     private val courseRepository: CourseRepositoryImpl,
@@ -38,13 +38,17 @@ class CourseDetailViewModel @Inject constructor(
         viewModelScope.launch {
             delay(500)
             courseRepository.getCourseByIdWithArticle(id).collect {
-                    course -> _uiState.value = UiCourseDetailState(data = course)
+                    data -> _uiState.update { state ->
+                        state.copy(data = Pair(data.courses, data.articles), loading = false)
+                    }
             }
         }
     }
 
     fun refreshList(id: Long) {
-        _uiState.value = UiCourseDetailState(data = null, loading = true)
+        _uiState.update { state ->
+            state.copy(loading = true)
+        }
         getCourseAndList(id)
     }
 
@@ -91,7 +95,8 @@ class CourseDetailViewModel @Inject constructor(
     }
 
     fun filterListe(filter: ArticlesFilter) {
-        val liste = _uiState.value.data?.articles!!
+        val courses = _uiState.value.data?.first
+        val liste = _uiState.value.data?.second!!
         val listeFiltered = when(filter) {
             ArticlesFilter.DONE -> liste
             ArticlesFilter.TODO -> liste
@@ -100,8 +105,8 @@ class CourseDetailViewModel @Inject constructor(
             ArticlesFilter.QUANTITY_ASC -> liste.sortedBy { it.quantite }
             ArticlesFilter.QUANTITY_DESC -> liste.sortedByDescending { it.quantite }
         }
-        _uiState.value.data!!.articles = listeFiltered
-
-        _uiState.value = UiCourseDetailState(data = _uiState.value.data)
+        _uiState.update { state ->
+            state.copy(data = Pair(courses, listeFiltered), loading = false)
+        }
     }
 }
